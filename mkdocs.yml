@@ -1,0 +1,66 @@
+site_name: Documentación sobre scaffolding
+site_dir: public
+repo_url: git@gitlab.com:bigpear.adm/desafio_future.git
+site_description: Documentación para el uso de scaffolding.
+use_directory_urls: false
+extra:
+  use_directory_urls: false
+theme:
+  name: material
+  features:
+    - content.tabs.link
+    - navigation.top
+
+plugins:
+  - autolinks
+  - mkdocstrings
+  - print-site
+  - search:
+      lang: es
+  - pdf-export:
+      combined: true
+
+markdown_extensions:
+  - attr_list
+  - def_list
+  - pymdownx.tabbed
+  - pymdownx.magiclink
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - toc:
+      permalink: ¶
+  # - pymdownx.superfences:
+  #     custom_fences:
+  #       - name: mermaid
+  #         class: mermaid
+  #         format: !!python/name:pymdownx.superfences.fence_code_format
+nav:
+  - Inicio: index.md
+  - Usuarios:
+      - "users/index.md"
+
+  - Administradores:
+      - "admin/config.md"
+      - "admin/users.md"
+      - "admin/workflow.md"
+      - "admin/reports.md"
+  - Soporte Técnico:
+      - "tech/index.md"
+      - "tech/install.md"
+      - "tech/issues.md"
+      - "tech/config-ref.md"
+  - Desarrolladores:
+      - "dev/index.md"
+      - "dev/dev-guide.md"
+      - "dev/extrernal-docs.md"
+      - "dev/git-guide.md"
+      - "dev/rampup.md"
+      - "dev/releases.md"
+  - Gestión de Proyecto:
+      - "gestion/index.md"
+      - "gestion/agile.md"
+      - "gestion/ciclo-de-vida-issues.md"
+      - "gestion/reportando-bugs.md"
+  - Sobre el sitio: "about.md"
+
+copyright: Construido por BigPear

@@ -1,0 +1,157 @@
+.
+├── bin
+│  ├── _sourced
+│  │  ├── constants.sh
+│  │  ├── countdown.sh
+│  │  ├── messages.sh
+│  │  └── yes_no.sh
+│  ├── backup.sh
+│  ├── ci.upload.sh
+│  ├── deploy.sh
+│  ├── list_backups.sh
+│  ├── prepare.sh
+│  ├── restore.sh
+│  ├── update.sh
+│  └── variables.sh
+├── CHANGELOG.md
+├── compose.yml
+├── CONTRIBUTING.md
+├── Dockerfile
+├── docs
+│  ├── about.md
+│  ├── assets
+│  │  ├── logo-small.png
+│  │  └── logo.svg
+│  ├── css
+│  │  └── extra.css
+│  ├── dev
+│  │  ├── dev-guide.md
+│  │  ├── extrernal-docs.md
+│  │  ├── git-guide.md
+│  │  ├── index.md
+│  │  └── releases.md
+│  ├── gestion
+│  │  ├── agile.md
+│  │  ├── ciclo-de-vida-issues.md
+│  │  ├── index.md
+│  │  └── reportando-bugs.md
+│  ├── imgs
+│  ├── index.md
+│  ├── tech
+│  │  ├── config-ref.md
+│  │  ├── contributing.md
+│  │  ├── index.md
+│  │  ├── install.md
+│  │  └── issues.md
+│  └── users
+│     └── index.md
+├── LICENSE
+├── Makefile
+├── MANIFEST.in
+├── mkdocs.yml
+├── package-lock.json
+├── package.json
+├── pyproject.toml
+├── README.md
+├── src
+│  ├── common
+│  │  ├── apps.py
+│  │  ├── migrations
+│  │  │  └── __index__.py
+│  │  └── models
+│  │     ├── __init__.py
+│  │     └── base.py
+│  ├── public
+│  │  └── img
+│  │     ├── favicon.ico
+│  │     └── logo.png
+│  ├── samples
+│  │  ├── __init__.py
+│  │  ├── admin.py
+│  │  ├── api
+│  │  │  ├── __init__.py
+│  │  │  └── views.py
+│  │  ├── apps.py
+│  │  ├── migrations
+│  │  │  └── __init__.py
+│  │  └── models
+│  │     ├── __init__.py
+│  │     └── sample.py
+│  ├── scaffolding
+│  │  ├── __init__.py
+│  │  ├── manage.py
+│  │  ├── router.py
+│  │  ├── settings.py
+│  │  ├── templates
+│  │  │  ├── 404.html
+│  │  │  ├── 500.html
+│  │  │  ├── about.html
+│  │  │  ├── base.html
+│  │  │  ├── footer.html
+│  │  │  ├── header.html
+│  │  │  ├── index.html
+│  │  │  └── sandbox.html
+│  │  ├── urls.py
+│  │  └── wsgi.py
+│  ├── ui
+│  │  ├── App.vue
+│  │  ├── components
+│  │  │  ├── cart.vue
+│  │  │  ├── CartList.vue
+│  │  │  ├── CartListItem.vue
+│  │  │  ├── catalog.vue
+│  │  │  ├── index.js
+│  │  │  ├── nav.vue
+│  │  │  └── ProductListItem.vue
+│  │  ├── conf.js
+│  │  ├── index.js
+│  │  ├── main.js
+│  │  ├── models
+│  │  │  ├── base.js
+│  │  │  └── sample.js
+│  │  ├── pages
+│  │  │  └── main
+│  │  │     ├── index.js
+│  │  │     └── page.vue
+│  │  ├── public
+│  │  │  └── img
+│  │  │     ├── favicon.ico
+│  │  │     └── logo.png
+│  │  ├── router
+│  │  │  └── index.js
+│  │  ├── sass
+│  │  │  ├── _variables.scss
+│  │  │  └── main.scss
+│  │  ├── store
+│  │  │  └── index.js
+│  │  └── utils
+│  │     └── index.js
+│  └── users
+│     ├── __init__.py
+│     ├── admin.py
+│     ├── api
+│     │  ├── __init__.py
+│     │  └── views.py
+│     ├── apps.py
+│     ├── migrations
+│     │  └── __init__.py
+│     └── models
+│        ├── __init__.py
+│        ├── profile.py
+│        └── user.py
+├── tests
+│  ├── __init__.py
+│  ├── conftest.py
+│  ├── samples
+│  │  ├── __init__.py
+│  │  ├── api
+│  │  │  └── test_views.py
+│  │  ├── recipes.py
+│  │  └── test_models.py
+│  └── user
+│     ├── __init__.py
+│     ├── recipes.py
+│     └── test_models.py
+├── tree.txt
+├── VERSION
+└── vite.config.js

@@ -1,0 +1,2 @@
+recursive-include src/scaffolding/templates *
+recursive-include src/scaffolding/static *
