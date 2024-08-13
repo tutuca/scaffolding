@@ -8,7 +8,3 @@ intalación del sitio.
 - [Procedimiento de instalación](install.md)
 - [Referencias sobre los archivos de configuración](config-ref.md)
 - [Reporte de errores usando GitLab](issues.md)
-
-
-
-

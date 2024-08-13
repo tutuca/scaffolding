@@ -6,9 +6,8 @@ import { cleanParams } from "../utils";
 const HEADERS = {
   "X-CSRFToken": settings.csrf(),
   "Content-Type": "application/json",
-  "Accept": "application/json",
-}
-
+  Accept: "application/json",
+};
 
 class QuerySet extends Array {
   loading = false;
@@ -27,7 +26,6 @@ class QuerySet extends Array {
     return this[previousIndex];
   }
 }
-
 
 export class Manager {
   constructor(proto) {
@@ -121,7 +119,6 @@ export class Manager {
     return instance;
   }
 }
-
 
 export class BaseModel extends Object {
   static baseURL = settings.baseURL;

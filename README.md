@@ -22,7 +22,7 @@
 │   ├── samples/            -> Django App `Samples`.
 │   ├── scaffolding/        -> Django project.
 │   │   └── manage.py       -> Punto de entrada de la aplicación web.
-│   ├── users/              -> Django App `Users`. 
+│   ├── users/              -> Django App `Users`.
 │   └── ui/                 -> Proyecto Vue para la interfaz gráfica.
 │       ├── scss            -> Estilos usando Sass.
 │       └── main.js         -> Punto de entrada para compilación.
