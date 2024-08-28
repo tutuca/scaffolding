@@ -1,13 +1,18 @@
 // const BASEURL = process.env.VUE_APP_BASE_URL || '/api';
 const BASEURL = "/api";
 
+function getCSRFToken() {
+  const tokenInput = document.getElementById("csrf-token");
+  return tokenInput ? tokenInput.value : "";
+}
+
 const settings = {
   token: "",
   headers: new Headers({
     Accept: "application/json",
   }),
   csrf: () => {
-    return document.getElementById("csrf-token").value;
+    return getCSRFToken();
   },
   baseURL: BASEURL,
   attribution:

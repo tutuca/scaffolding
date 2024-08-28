@@ -1,6 +1,5 @@
 <script setup>
 import ListItem from "./ListItem.vue";
-import { defineProps } from "vue";
 
 const props = defineProps(['queryset'])
 

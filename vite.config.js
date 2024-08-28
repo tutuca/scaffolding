@@ -31,20 +31,18 @@ const rollupOptions = {
 
 export default {
   plugins: [vue()],
-  root: resolve("./src/ui"),
+  root: "src/ui",
   base: "/static/",
-  resolve: {
-    extensions: [".js", ".json"],
-    alias: {
-      "@": resolve("./src/ui"),
-      "#root": resolve("./"),
-    },
-  },
   build: {
     outDir: resolve("./src/scaffolding/static"),
     manifest: "manifest.json",
     target: "es2015",
     sourcemap: true,
     rollupOptions,
+  },
+  test: {
+    dir: "tests/ui",
+    environment: "happy-dom",
+    include: ["test_*.js", "**/test_*.js"],
   },
 };
