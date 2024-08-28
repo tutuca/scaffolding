@@ -33,6 +33,13 @@ BASE_APPS = (
     "django.contrib.sessions",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework.authtoken",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.usersessions",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
 )
 
 PROJECT_APPS = ("common", "samples", "users")
@@ -50,6 +57,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
+    "allauth.usersessions.middleware.UserSessionsMiddleware",
 ]
 
 ROOT_URLCONF = "scaffolding.urls"
@@ -128,3 +137,19 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = "users.User"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": env.str("GOOGLE_API_CLIENT_ID", default=""),
+            "secret": env.str("GOOGLE_API_SECRET", default=""),
+            "key": env.str("GOOGLE_API_KEY", default=""),
+        }
+    }
+}

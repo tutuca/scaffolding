@@ -7,7 +7,9 @@ version = "0.0.1"
 authors = [{name = "BigPear", email = "hola@bigpear.com.ar"}]
 dependencies = [
   "Django==5.0.6",
+  "django-allauth[socialaccount]",
   "django-cogwheels",
+  "django-cors-headers",
   "django-debug-toolbar",
   "django-environ",
   "django-extensions",
@@ -15,7 +17,7 @@ dependencies = [
   "django-taggit",
   "django-vite",
   "djangorestframework",
-  "django-cors-headers",
+  "dj-rest-auth",
   "gunicorn",
 ]
 

@@ -26,7 +26,9 @@ urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
     path("about", TemplateView.as_view(template_name="about.html"), name="about"),
     path("sandbox", TemplateView.as_view(template_name="sandbox.html"), name="sandbox"),
+    path("api/auth/", include("users.api.urls")),
     path("api/", include(router.urls)),
+
     path("admin/", admin.site.urls),
 ]
 
