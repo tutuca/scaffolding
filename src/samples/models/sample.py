@@ -15,6 +15,7 @@ class SampleType(models.Model):
 
 class Sample(models.Model):
     title = models.CharField(max_length=255)
+    description = models.TextField(default="", blank=True)
     sample_type = models.ForeignKey(SampleType, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -25,6 +26,8 @@ class Sample(models.Model):
 
 
 class SampleSerializer(serializers.ModelSerializer):
+    sample_type = serializers.StringRelatedField()
+
     class Meta:
         model = Sample
-        fields = ["title", "sample_type"]
+        fields = ["title", "description", "sample_type"]

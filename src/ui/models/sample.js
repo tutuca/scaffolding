@@ -1,10 +1,6 @@
-import { BaseModel, Manager } from "./base";
+import BaseModel from "./base";
 
 export class Sample extends BaseModel {
-  static baseURL = `${BaseModel.baseURL}/samples`;
-
-  constructor(data) {
-    super(data);
-  }
+  static endpoint = "/samples";
 }
 export default Sample;

@@ -11,10 +11,16 @@ const props = defineProps(['item'])
           <div class="media-right">
           </div>
         </div>
-        <br />
         <p class="mt-4">
           {{ item.description }}
         </p>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="content">
+        <slot>
+          <p class="card-footer-item"><span class="tag is-primary">{{ item.sample_type }}</span></p>
+        </slot>
       </div>
     </div>
   </article>
