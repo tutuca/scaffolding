@@ -10,6 +10,7 @@
     "test": "vitest --dom"
   },
   "dependencies": {
+    "@vueform/vueform": "^1.10.4",
     "bulma": "^1.0.1",
     "dayjs": "^1.11.13",
     "vue": "^3.4.29",

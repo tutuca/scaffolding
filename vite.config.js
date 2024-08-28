@@ -33,6 +33,12 @@ export default {
   plugins: [vue()],
   root: "src/ui",
   base: "/static/",
+  resolve: {
+    extensions: [".js", ".json", ".vue", "scss"],
+    alias: {
+      root: resolve("./"),
+    },
+  },
   build: {
     outDir: resolve("./src/scaffolding/static"),
     manifest: "manifest.json",
