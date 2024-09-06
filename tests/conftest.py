@@ -1,6 +1,7 @@
 import pytest
 from unittest import mock
 from rest_framework.permissions import IsAuthenticated
+from .recipes import *  # noqa
 
 
 @pytest.fixture(scope="session", autouse=True)
