@@ -1,7 +1,18 @@
-import { expect, test } from "vitest";
-import Sample from "/models/sample";
+import { expect, test, vi } from "vitest";
+import { Sample } from "/models";
 
-test("main vue entry point", () => {
-  const sample = Sample.objects.create({});
+global.fetch = vi.fn();
+
+function createFetchResponse(data) {
+  return { json: () => new Promise((resolve) => resolve(data)) };
+}
+
+test("Create empty sample", async () => {
+  const SAMPLE_RESPONSE = {
+    id: 1,
+    title: "sample-title",
+  };
+  fetch.mockResolvedValue(createFetchResponse());
+  const sample = await Sample.objects.create(SAMPLE_RESPONSE);
   expect(sample).toBeInstanceOf(Sample);
 });
