@@ -29,7 +29,7 @@
     <link rel="shortlink" href="{{site_url}}/" />
     <title>{{ title|default:"scaffolding" }} </title>
     {% vite_hmr_client %}
-    <link rel="stylesheet" href="{% vite_asset_url 'sass/main.scss' %}">
+    <link rel="stylesheet" href="{% vite_asset_url 'css/main.css' %}">
     <meta property="og:site_name" content="scaffolding" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <meta property="og:type" content="article" />
@@ -38,14 +38,14 @@
 
 </head>
 
-<body class="body scaffolding">
-    <div id="page">
-        <div id="main-viewport">
+<body class="body">
+    <main id="page" class="flex flex-col justify-between min-h-screen" >
+        <div id="main-viewport" class="grow">
         {% block container %}
         {% endblock container %}
         </div>
         {% include 'footer.html' %}
-    </div>
+    </main>
     <input type="hidden" id="csrf-token" value="{{csrf_token}}" />
     {% block extra_js %}
     {% endblock extra_js %}
