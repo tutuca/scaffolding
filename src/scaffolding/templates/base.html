@@ -39,16 +39,16 @@
 </head>
 
 <body class="body">
-    <main id="page" class="flex flex-col justify-between min-h-screen" >
-        <div id="main-viewport" class="grow">
+    <main id="page">
+        <div id="main-viewport" class="container">
         {% block container %}
         {% endblock container %}
         </div>
         {% include 'footer.html' %}
+
     </main>
     <input type="hidden" id="csrf-token" value="{{csrf_token}}" />
     {% block extra_js %}
     {% endblock extra_js %}
-
 </body>
 </html>

@@ -1,27 +1,19 @@
 <script setup>
 const props = defineProps(['item'])
-
 </script>
 <template>
-  <article class="card">
-    <div class="card-content">
-      <div class="content">
-        <h4>{{ item.title }}</h4>
-        <div class="media">
-          <div class="media-right">
-          </div>
-        </div>
-        <p class="mt-4">
-          {{ item.description }}
-        </p>
-      </div>
+  <article class="card bg-base-100 w-96 shadow-xl">
+  <figure>
+    <img
+      src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+      alt="Shoes" />
+  </figure>
+  <div class="card-body">
+    <h2 class="card-title">{{ item.title }}</h2>
+    <p>{{ item.description }}</p>
+    <div class="card-actions justify-end">
+      <router-link :to="item.url" class="btn btn-primary">more</router-link>
     </div>
-    <div class="card-footer">
-      <div class="content">
-        <slot>
-          <p class="card-footer-item"><span class="tag is-primary">{{ item.sample_type }}</span></p>
-        </slot>
-      </div>
-    </div>
-  </article>
+  </div>
+</article>
 </template>
