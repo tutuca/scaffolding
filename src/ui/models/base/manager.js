@@ -84,8 +84,7 @@ export default class Manager {
     const qs = new QuerySet();
     const url = `${this.model.url}/?${cleanedParams.toString()}`;
     const json = await this.doFetch(url);
-
-    json.forEach((e) => qs.push(new this.model(e)));
+    json.results.forEach((e) => qs.push(new this.model(e)));
 
     qs.count = json.count;
     qs.page = cleanedParams.page;

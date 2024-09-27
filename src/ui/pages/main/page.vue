@@ -8,8 +8,8 @@ const state = main();
 </script>
 
 <template>
-  <div class="content">
-    <h1 class="title">Samples</h1>
-    <list :queryset="state.queryset" />
-  </div>
-</template>
+    <div class="content">
+      <h1 class="title">Profile</h1>
+      <list :queryset="state.queryset" />
+    </div>
+  </template>
