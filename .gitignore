@@ -27,4 +27,3 @@ src/scaffolding/static
 static/
 *_cache/
 package-lock.json
-scaffolding

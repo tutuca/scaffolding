@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import router from "./router";
 import Vueform from "@vueform/vueform";
-import vueformConfig from "root/vueform.config";
+import vueformConfig from "./vueform.config";
 
 function initApp(component, selector) {
   const app = createApp(component);

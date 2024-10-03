@@ -21,8 +21,14 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 # Application definition
 
 BASE_APPS = (
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.usersessions",
+    "allauth",
     "corsheaders",
     "debug_toolbar",
+    "dj_rest_auth.registration",
+    "dj_rest_auth",
     "django_extensions",
     "django_filters",
     "django_vite",
@@ -34,12 +40,6 @@ BASE_APPS = (
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.usersessions",
-    "dj_rest_auth",
-    "dj_rest_auth.registration",
 )
 
 PROJECT_APPS = ("common", "samples", "users")

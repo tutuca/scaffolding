@@ -14,13 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^samples/', include(samples_urls))
 """
 
-from django.urls import include, path
 from django.conf import settings
 from django.contrib import admin
+from django.urls import include, path
 from django.views.generic import TemplateView
 
 from .router import router
-
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html"), name="home"),

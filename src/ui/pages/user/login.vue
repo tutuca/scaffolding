@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { main, login } from "./controller"
-import LoginForm from "/forms/login/form.vue";
+import LoginForm from "/components/forms/login/form.vue";
 const data = ref({})
 const state = main();
 

@@ -2,7 +2,7 @@
   "name": "scaffolding-ui",
   "version": "0.0.1",
   "type": "module",
-  "main": "src/ui/index.js",
+  "main": "index.js",
   "scripts": {
     "start": "vite",
     "build": "vite build",

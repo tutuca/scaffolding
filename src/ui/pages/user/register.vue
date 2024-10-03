@@ -1,7 +1,7 @@
 <script setup>
 
 import { main } from "./controller"
-import RegisterForm from "/forms/register/form.vue";
+import RegisterForm from "/components/forms/register/form.vue";
 
 const state = main();
 

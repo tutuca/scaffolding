@@ -14,7 +14,7 @@ function getEntries() {
     }),
   );
   const out = {
-    index: "./src/ui/index.js",
+    main: "./src/ui/index.js",
     stylesheet: "./src/ui/css/main.css",
     ...entries,
   };
