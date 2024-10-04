@@ -1,4 +1,3 @@
-
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -24,20 +23,21 @@ class ProfileViewSet(viewsets.ModelViewSet):
     ]
 
 
-
 class AuthToken(ObtainAuthToken):
     throttle_classes = [throttling.AnonRateThrottle]
- 
-    class Meta:
-        fields = ['token', 'user']
+
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
+        serializer = self.serializer_class(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+        user = serializer.validated_data["user"]
         token, created = Token.objects.get_or_create(user=user)
 
-        return Response({
-            'token': token.key,
-            'user': user,
-        })
+        return Response(
+            {
+                "token": token.key,
+                "username": serializer.validated_data["username"],
+                "id": user.pk,
+                "date_joined": user.date_joined.isoformat(),
+                "last_login": user.last_login.isoformat(),
+            }
+        )

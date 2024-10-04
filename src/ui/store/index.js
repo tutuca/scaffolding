@@ -7,6 +7,7 @@ export const store = reactive({
   nextPage: "",
   prevPage: "",
   query: {},
+  session: null,
   queryset: [],
 });
 

@@ -2,7 +2,8 @@ import { BaseModel, Manager } from "./base";
 
 class UserManager extends Manager {
   login(data) {
-    const url = `${BaseModel.baseURL}/login`;
+    // TODO: add cookie based session.
+    const url = `${BaseModel.baseURL}/auth/user/token-auth`;
     return this.doPost(url, data);
   }
   register(data) {

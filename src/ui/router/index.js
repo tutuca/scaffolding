@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import MainView from "/pages/main/page.vue";
 import UserView from "/pages/user/page.vue";
 import LoginView from "/pages/user/login.vue";
+import LogoutView from "/pages/user/logout.vue";
 import RegisterView from "/pages/user/register.vue";
 import ProfileView from "/pages/profile/page.vue";
 
@@ -21,11 +22,12 @@ const router = createRouter({
         {
           path: ":id",
           component: LoginView,
-        }, 
-      ]
+        },
+      ],
     },
     {
       path: "/profile",
+      name: "profile",
       component: ProfileView,
     },
     {
@@ -36,6 +38,11 @@ const router = createRouter({
           path: "login",
           component: LoginView,
         },
+        {
+          path: "logout",
+          component: LogoutView,
+        },
+
         {
           path: "register",
           component: RegisterView,
