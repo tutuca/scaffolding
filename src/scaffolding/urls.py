@@ -18,8 +18,17 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
 
 from .router import router
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="scaffolding API Docs",
+        default_version="v1",
+    )
+)
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
@@ -27,7 +36,7 @@ urlpatterns = [
     path("sandbox", TemplateView.as_view(template_name="sandbox.html"), name="sandbox"),
     path("api/auth/", include("users.api.urls")),
     path("api/", include(router.urls)),
-
+    path("api/docs/", schema_view.with_ui("swagger", cache_timeout=0), name="api_docs"),
     path("admin/", admin.site.urls),
 ]
 

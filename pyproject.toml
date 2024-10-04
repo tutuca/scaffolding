@@ -19,6 +19,8 @@ dependencies = [
   "djangorestframework",
   "dj-rest-auth",
   "gunicorn",
+  "drf-yasg",
+  "setuptools>=75.1.0",
 ]
 
 [project.optional-dependencies]
