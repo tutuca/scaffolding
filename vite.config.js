@@ -1,7 +1,6 @@
 import { resolve, parse, basename } from "path";
 import { glob } from "glob";
 import vue from "@vitejs/plugin-vue";
-import daisyui from "daisyui";
 
 function getEntries() {
   const matches = glob.sync("./src/ui/pages/**/index.js");

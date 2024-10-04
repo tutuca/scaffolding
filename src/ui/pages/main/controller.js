@@ -10,3 +10,13 @@ export const main = () => {
   });
   return state;
 };
+
+
+export const detail = (id) => {
+  onBeforeMount(() => {
+    Sample.objects.one(id).then((response) => {
+      state.current = response;
+    });
+  });
+  return state;
+};

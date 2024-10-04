@@ -8,7 +8,7 @@ const state = main();
 </script>
 
 <template>
-  <div class="content">
+  <article class="container mx-auto rounded-md shadow-xl p-4">
     <RegisterForm />
-  </div>
+  </article>
 </template>

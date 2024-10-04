@@ -17,18 +17,16 @@ const router = createRouter({
       path: "/samples",
       name: "samples",
       component: MainView,
-    },
-    {
-      path: "/user/:id",
-      component: UserView,
       children: [
         {
-          // UserProfile will be rendered inside User's <router-view>
-          // when /user/:id/profile is matched
-          path: "profile",
-          component: ProfileView,
-        },
-      ],
+          path: ":id",
+          component: LoginView,
+        }, 
+      ]
+    },
+    {
+      path: "/profile",
+      component: ProfileView,
     },
     {
       path: "/user/",

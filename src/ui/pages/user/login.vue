@@ -8,7 +8,7 @@ const state = main();
 </script>
 
 <template>
-  <div class="content">
-    <LoginForm @submit="login"/>
-  </div>
+  <article class="container mx-auto rounded-md shadow-xl p-4">
+      <LoginForm @submit="login"/>
+  </article>
 </template>

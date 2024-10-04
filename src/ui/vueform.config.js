@@ -1,9 +1,9 @@
 import es from "@vueform/vueform/locales/es";
-import vueform from "@vueform/vueform/dist/vueform";
+import tailwind from '@vueform/vueform/dist/tailwind'
 import { defineConfig } from "@vueform/vueform";
 
 export default defineConfig({
-  theme: vueform,
+  theme: tailwind,
   locales: { es },
   locale: "es",
 });
