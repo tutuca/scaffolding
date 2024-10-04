@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -40,7 +41,9 @@ BASE_APPS = (
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
-    "drf_yasg",
+    "rest_framework_simplejwt",
+    "drf_spectacular",
+
 )
 
 PROJECT_APPS = ("common", "samples", "users")
@@ -136,14 +139,18 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ],
     "PAGE_SIZE": 12,
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'scaffolding API',
+    'DESCRIPTION': 'scaffolding description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 SWAGGER_SETTINGS = {
     "LOGIN_URL": "/api/auth/login",
     "LOGOUT_URL": "/api/auth/logout",
@@ -173,20 +180,19 @@ EMAIL_BACKEND = env.str("EMAIL_BACKEND", default="django.core.mail.backends.cons
 
 # API AUTH
 
+
+# djangorestframework-simplejwt
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
+
+# dj-rest-auth
 REST_AUTH = {
-    "LOGIN_SERIALIZER": "dj_rest_auth.serializers.LoginSerializer",
-    "TOKEN_SERIALIZER": "dj_rest_auth.serializers.TokenSerializer",
-    "USER_DETAILS_SERIALIZER": "dj_rest_auth.serializers.UserDetailsSerializer",
-    "PASSWORD_RESET_SERIALIZER": "dj_rest_auth.serializers.PasswordResetSerializer",
-    "PASSWORD_RESET_CONFIRM_SERIALIZER": "dj_rest_auth.serializers.PasswordResetConfirmSerializer",
-    "PASSWORD_CHANGE_SERIALIZER": "dj_rest_auth.serializers.PasswordChangeSerializer",
-    "REGISTER_SERIALIZER": "dj_rest_auth.registration.serializers.RegisterSerializer",
-    "REGISTER_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
-    "TOKEN_MODEL": "rest_framework.authtoken.models.Token",
-    "TOKEN_CREATOR": "dj_rest_auth.utils.default_create_token",
-    "PASSWORD_RESET_USE_SITES_DOMAIN": False,
-    "OLD_PASSWORD_FIELD_ENABLED": False,
-    "LOGOUT_ON_PASSWORD_CHANGE": False,
-    "SESSION_LOGIN": True,
-    "USE_JWT": False,
+    "USE_JWT": True,
+    # Name of access token cookie, remove this setting if you don't want access token to be sent as cookie
+    "JWT_AUTH_COOKIE": "_auth",
+    # Name of refresh token cookie, remove this setting if you don't want refresh token to be sent as cookie
+    "JWT_AUTH_REFRESH_COOKIE": "_refresh",
+    "JWT_AUTH_HTTPONLY": False,  # Makes sure refresh token is sent
 }

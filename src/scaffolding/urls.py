@@ -18,28 +18,27 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
 
 from .router import router
 
-schema_view = get_schema_view(
-    openapi.Info(
-        title="scaffolding API Docs",
-        default_version="v1",
-    )
-)
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
     path("about", TemplateView.as_view(template_name="about.html"), name="about"),
     path("sandbox", TemplateView.as_view(template_name="sandbox.html"), name="sandbox"),
-    path("api/auth/", include("users.api.urls")),
-    path("api/", include(router.urls)),
-    path("api/docs/", schema_view.with_ui("swagger", cache_timeout=0), name="api_docs"),
+    path("api/v1/auth/", include("users.api.urls")),
+    path("api/v1/", include(router.urls)),
     path("admin/", admin.site.urls),
 ]
 
+urlpatterns += [
+    # YOUR PATTERNS
+    path('api/v1/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('api/v1/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+]
 if settings.DEBUG:
     import debug_toolbar
     from django.conf.urls.static import static
