@@ -9,6 +9,8 @@ import ProfileDetailView from "/pages/profile/detail.vue";
 
 const router = createRouter({
   history: createWebHistory(),
+  linkActiveClass: "active",
+  linkExactActiveClass: "active",
   routes: [
     {
       path: "/",

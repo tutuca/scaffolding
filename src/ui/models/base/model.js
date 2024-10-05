@@ -4,12 +4,15 @@ import Manager from "./manager";
 
 export default class BaseModel extends Object {
   static baseURL = settings.baseURL;
-
+  static endpoint = "";
   constructor(data) {
     super();
     // TODO: add schema validation to `data`.
     // TODO: user class field for schema declaration.
     Object.assign(this, cleanParams(data));
+  }
+  get route() {
+    return `${this.constructor.endpoint}/${this.id}`;
   }
   static get url() {
     return `${this.baseURL}${this.endpoint}`;

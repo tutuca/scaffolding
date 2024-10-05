@@ -13,12 +13,12 @@ const defaultState = {
   queryset: [],
 };
 const state = reactive(defaultState);
-const localState = useStorage("application-local-storage", {
-  state: defaultState,
-});
 
-watch(state, (oldValue, newValue) => {
-  localState.state = newValue;
-});
+const localState = useStorage(
+  "application-local-storage",
+  state,
+  localStorage,
+  { mergeDefaults: true },
+);
 
 export default state;

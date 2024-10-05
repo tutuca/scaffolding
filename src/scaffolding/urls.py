@@ -16,7 +16,7 @@ Including another URLconf
 
 from django.conf import settings
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
@@ -25,7 +25,6 @@ from .router import router
 
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="index.html"), name="home"),
     path("about", TemplateView.as_view(template_name="about.html"), name="about"),
     path("sandbox", TemplateView.as_view(template_name="sandbox.html"), name="sandbox"),
     path("admin/", admin.site.urls),
@@ -38,6 +37,10 @@ urlpatterns += [
     path('api/v1/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path("api/v1/auth/", include("users.api.urls")),
     path("api/v1/", include(router.urls)),
+]
+urlpatterns += [
+    re_path("^.*$", TemplateView.as_view(template_name="index.html"), name="home"),
+
 ]
 if settings.DEBUG:
     import debug_toolbar

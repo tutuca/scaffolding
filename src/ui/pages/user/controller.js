@@ -16,7 +16,6 @@ function loginSuccess(user) {
     token: user.access_token,
     user: user,
   };
-  debugger;
   return router.push({ name: "profileDetail", params: { id: user.id } });
 }
 

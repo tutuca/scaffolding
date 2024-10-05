@@ -1,4 +1,5 @@
 from common.models import models, serializers
+from rest_framework.fields import Field
 
 
 class SampleTypeChoices(models.TextChoices):
@@ -26,8 +27,13 @@ class Sample(models.Model):
 
 
 class SampleSerializer(serializers.ModelSerializer):
-    sample_type = serializers.StringRelatedField()
+    sample_type: Field = serializers.StringRelatedField()
 
     class Meta:
         model = Sample
-        fields = ["title", "description", "sample_type"]
+        fields = [
+            "id",
+            "title",
+            "description",
+            "sample_type",
+        ]

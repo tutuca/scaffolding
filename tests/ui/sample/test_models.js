@@ -8,11 +8,14 @@ function createFetchResponse(data) {
 }
 
 test("Create empty sample", async () => {
+  const title = "sample title";
   const SAMPLE_RESPONSE = {
     id: 1,
-    title: "sample-title",
+    title: title,
   };
-  fetch.mockResolvedValue(createFetchResponse());
-  const sample = await Sample.objects.create(SAMPLE_RESPONSE);
+  fetch.mockResolvedValue(createFetchResponse(SAMPLE_RESPONSE));
+  const sample = await Sample.objects.create({ title: title });
   expect(sample).toBeInstanceOf(Sample);
+  expect(sample.id).toBe(1);
+  expect(sample.route()).toBe("/samples/1");
 });

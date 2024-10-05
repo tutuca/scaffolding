@@ -12,8 +12,9 @@ const props = defineProps(['item'])
     <h2 class="card-title">{{ item.title }}</h2>
     <p>{{ item.description }}</p>
     <div class="card-actions justify-end">
-      <!-- router-link :to="item.url" class="btn btn-primary">more</router-link -->
-       <a href="" class="btn btn-primary">more</a>
+        <slot name="links">
+            <router-link v-if="item.id" :to="item.route" class="btn btn-primary">more</router-link>
+        </slot>
     </div>
   </div>
 </article>

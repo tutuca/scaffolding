@@ -5,21 +5,32 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "dev ui",
             "command": "npm start",
-            "name": "npm start",
             "request": "launch",
             "type": "node-terminal"
         },
         {
-            "name": "manage runserver",
+            "name": "dev server",
             "type": "debugpy",
             "request": "launch",
             "args": [
                 "runserver"
             ],
+            "cwd": "${workspaceFolder}",
             "django": true,
             "autoStartBrowser": false,
             "program": "src/scaffolding/manage.py"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "website",
+            "configurations": [
+                "dev ui",
+                "dev server"
+            ],
+            "stopAll": true
         }
     ]
 }
