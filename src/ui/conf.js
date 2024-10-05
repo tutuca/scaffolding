@@ -1,5 +1,5 @@
 // const BASEURL = process.env.VUE_APP_BASE_URL || '/api';
-const BASEURL = "/api";
+const BASEURL = "/api/v1";
 
 function getCSRFToken() {
   const tokenInput = document.getElementById("csrf-token");

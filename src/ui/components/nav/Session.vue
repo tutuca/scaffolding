@@ -5,7 +5,7 @@ import state from "/store";
 <template>
     <details>
         <template v-if="state.session">
-            <summary >{{ state.session.username }}</summary>
+            <summary >{{ state.session.user.username }}</summary>
             <ul class="p-2">
                 <li>
                     <router-link class="button text-nowrap is-primary" to="/profile">

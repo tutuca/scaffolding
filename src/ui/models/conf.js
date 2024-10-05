@@ -1,4 +1,4 @@
-const BASEURL = "http://localhost:8000/api";
+const BASEURL = "http://localhost:8000/api/v1";
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {

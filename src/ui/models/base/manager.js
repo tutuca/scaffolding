@@ -3,11 +3,22 @@ import settings from "/models/conf";
 import { cleanParams } from "/utils";
 import QuerySet from "./queryset.js";
 
-const HEADERS = {
+const Authorization = () => {
+  let header = {};
+  if (state.session && state.session.token) {
+    header["Authorization"] = `bearer ${
+      state.session ? state.session.token : null
+    }`;
+  }
+  return header;
+};
+
+const buildHeders = () => ({
   "X-CSRFToken": settings.csrf,
   "Content-Type": "application/json",
   Accept: "application/json",
-};
+  ...Authorization(),
+});
 
 export default class Manager {
   constructor(proto) {
@@ -37,7 +48,7 @@ export default class Manager {
     params = {
       method: "PATCH",
       body: body,
-      headers: HEADERS,
+      headers: buildHeders(),
       credentials: "same-origin",
       ...params,
     };
@@ -49,7 +60,7 @@ export default class Manager {
   async doDelete(url, params) {
     params = {
       method: "DELETE",
-      headers: HEADERS,
+      headers: buildHeders(),
       credentials: "same-origin",
       ...params,
     };
@@ -66,7 +77,7 @@ export default class Manager {
     params = {
       method: "POST",
       body: body,
-      headers: HEADERS,
+      headers: buildHeders(),
       credentials: "same-origin",
       ...params,
     };

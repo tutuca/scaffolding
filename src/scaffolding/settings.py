@@ -195,4 +195,5 @@ REST_AUTH = {
     # Name of refresh token cookie, remove this setting if you don't want refresh token to be sent as cookie
     "JWT_AUTH_REFRESH_COOKIE": "_refresh",
     "JWT_AUTH_HTTPONLY": False,  # Makes sure refresh token is sent
+    "USER_DETAILS_SERIALIZER": "users.models.user.UserSerializer"
 }

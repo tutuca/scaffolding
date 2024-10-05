@@ -1,4 +1,5 @@
 <script setup>
+import state from "/store";
 import { computed } from 'vue'
 import { useDark, useToggle } from "@vueuse/core";
 
@@ -10,6 +11,9 @@ const isDark = useDark({
 });
 const toggle = useToggle(isDark);
 const theme = computed(()=> isDark ? 'dark' : 'light');
+
+state.theme = theme;
+
 </script>
 
 <template>

@@ -7,15 +7,17 @@ export function main() {
 }
 
 function loginError(error) {
+  console.log(error);
+
   return error;
 }
-function loginSuccess(response) {
+function loginSuccess(user) {
   state.session = {
-    token: response.token,
-    username: response.username,
-    user_id: response.id,
+    token: user.access_token,
+    user: user,
   };
-  return router.push("/profile");
+  debugger;
+  return router.push({ name: "profileDetail", params: { id: user.id } });
 }
 
 export async function login(form, formData) {
@@ -23,18 +25,39 @@ export async function login(form, formData) {
 
   // Show loading spinner
   form.submitting = true;
-  let response;
+  let user;
 
   try {
-    response = await User.objects.login(data);
+    user = await User.objects.login(data);
   } catch (error) {
     return loginError(error);
   } finally {
     form.submitting = false;
   }
 
-  if (response) {
-    loginSuccess(response);
+  if (user) {
+    loginSuccess(user);
+  }
+  return state;
+}
+
+export async function logout(form, formData) {
+  const data = form.data;
+
+  // Show loading spinner
+  form.submitting = true;
+  let user;
+
+  try {
+    user = await User.objects.logout(data);
+  } catch (error) {
+    return loginError(error);
+  } finally {
+    form.submitting = false;
+  }
+
+  if (user) {
+    loginSuccess(user);
   }
   return state;
 }

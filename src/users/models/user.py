@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
-
 from common.models import serializers
+
 
 class User(AbstractUser):
     pass
@@ -14,5 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "username",
-            "email"
+            "email",
+            "last_login",
+            "date_joined",
         ]

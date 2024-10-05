@@ -5,6 +5,7 @@ import LoginView from "/pages/user/login.vue";
 import LogoutView from "/pages/user/logout.vue";
 import RegisterView from "/pages/user/register.vue";
 import ProfileView from "/pages/profile/page.vue";
+import ProfileDetailView from "/pages/profile/detail.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -20,7 +21,8 @@ const router = createRouter({
       component: MainView,
       children: [
         {
-          path: ":id",
+          path: "samples/:id",
+          name: "samplesDetail",
           component: LoginView,
         },
       ],
@@ -29,6 +31,13 @@ const router = createRouter({
       path: "/profile",
       name: "profile",
       component: ProfileView,
+      children: [
+        {
+          path: "/profiles/:id",
+          name: "profileDetail",
+          component: ProfileDetailView,
+        },
+      ],
     },
     {
       path: "/user/",
