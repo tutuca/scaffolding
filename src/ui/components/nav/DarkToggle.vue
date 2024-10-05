@@ -17,7 +17,7 @@ state.theme = theme;
 </script>
 
 <template>
- <label class="grid place-items-center focus:outline-none">
+ <label class="grid place-items-center">
   <input
     type="checkbox"
     :value="theme" @click="toggle()"

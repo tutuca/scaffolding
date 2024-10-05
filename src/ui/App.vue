@@ -7,7 +7,7 @@ import Nav from './components/Nav.vue';
     <div class="container">
         <Nav />
     </div>
-    <div class="container grow" id="main-content">
+    <div class="container grow my-4" id="main-content">
         <RouterView />
     </div>
 </template>
