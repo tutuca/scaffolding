@@ -18,6 +18,7 @@ export default [
         path: ":id",
         name: "samplesDetail",
         component: DetailView,
+        props: true,
       },
     ],
   },

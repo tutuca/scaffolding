@@ -8,9 +8,10 @@ export default [
     component: Page,
     children: [
       {
-        path: "/profiles/:id",
+        path: ":id",
         name: "profileDetail",
         component: DetailView,
+        props: true,
       },
     ],
   },
