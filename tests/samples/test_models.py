@@ -1,10 +1,9 @@
 import pytest
-from .recipes import sample_recipe
 
 
 @pytest.mark.django_db
-def test_sample_create():
-    sample = sample_recipe.make()
+def test_sample_create(make_sample):
+    sample = make_sample()
 
     assert sample
     assert str(sample)

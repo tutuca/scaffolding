@@ -1,14 +1,12 @@
 <script setup>
-
-import { main } from "./controller"
-import RegisterForm from "/forms/register/form.vue";
+import { main } from "./controller";
+import RegisterForm from "/components/forms/register/form.vue";
 
 const state = main();
-
 </script>
 
 <template>
-  <div class="content">
-    <RegisterForm />
-  </div>
+    <article class="container mx-auto rounded-md shadow-xl p-4">
+        <RegisterForm />
+    </article>
 </template>

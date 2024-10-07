@@ -1,27 +1,21 @@
 <script setup>
-const props = defineProps(['item'])
-
+const props = defineProps(["item"]);
 </script>
 <template>
-  <article class="card">
-    <div class="card-content">
-      <div class="content">
-        <h4>{{ item.title }}</h4>
-        <div class="media">
-          <div class="media-right">
-          </div>
+    <article class="card bg-base-100 w-96 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">{{ item.title }}</h2>
+            <p>{{ item.description }}</p>
+            <div class="card-actions justify-end">
+                <slot name="links">
+                    <router-link
+                        v-if="item.id"
+                        :to="item.route"
+                        class="btn btn-primary"
+                        >more</router-link
+                    >
+                </slot>
+            </div>
         </div>
-        <p class="mt-4">
-          {{ item.description }}
-        </p>
-      </div>
-    </div>
-    <div class="card-footer">
-      <div class="content">
-        <slot>
-          <p class="card-footer-item"><span class="tag is-primary">{{ item.sample_type }}</span></p>
-        </slot>
-      </div>
-    </div>
-  </article>
+    </article>
 </template>

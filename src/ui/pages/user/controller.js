@@ -1,39 +1,75 @@
-import state from "/store";
+import useStore from "/store";
+import router from "/router";
 import User from "/models/user";
-import { onBeforeMount } from "vue";
 
 export function main() {
-  onBeforeMount(() => {
-    User.objects.many().then((response) => {
-      state.queryset = response;
+    return state;
+}
+
+function loginError(error) {
+    console.log(error);
+
+    return error;
+}
+function loginSuccess(user, state) {
+    state.session = {
+        token: user.access_token,
+        user: user,
+    };
+    return router.push({ name: "profileDetail", params: { id: user.id } });
+}
+
+export async function login(form, formData) {
+    const state = useStore();
+    const data = form.data;
+
+    // Show loading spinner
+    form.submitting = true;
+    let user;
+
+    try {
+        user = await User.objects.login(data);
+    } catch (error) {
+        return loginError(error);
+    } finally {
+        form.submitting = false;
+    }
+
+    if (user) {
+        loginSuccess(user, state);
+    }
+    return state;
+}
+
+export async function logout(form, formData) {
+    const state = useStore();
+    const data = form.data;
+
+    // Show loading spinner
+    form.submitting = true;
+    let user;
+
+    try {
+        user = await User.objects.logout(data);
+    } catch (error) {
+        return loginError(error);
+    } finally {
+        form.submitting = false;
+    }
+
+    if (user) {
+        loginSuccess(user);
+    }
+    return state;
+}
+
+export async function register(form) {
+    const state = useStore();
+    const data = form.requestData;
+    // Show loading spinner
+    form.submitting = state.loading;
+
+    User.objects.register(data).then((r) => {
+        form.submitting = state.loading;
     });
-  });
-  return state;
-}
-
-export async function login(form, FormData) {
-  // Using form.requestData will EXCLUDE conditional elements and it
-  // will submit the form as "Content-Type: application/json".
-  const data = form.requestData;
-
-  // Show loading spinner
-  form.submitting = state.loading;
-
-  User.objects.login(data).then((r) => {
-    form.submitting = state.loading;
-  });
-
-  // Handle success (status is 2XX)
-  console.log("success", response);
-}
-
-export async function register(form, FormData) {
-  const data = form.requestData;
-  debugger;
-  // Show loading spinner
-  form.submitting = state.loading;
-
-  User.objects.register(data).then((r) => {
-    form.submitting = state.loading;
-  });
 }

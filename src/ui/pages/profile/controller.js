@@ -1,12 +1,20 @@
-import state from "/store";
-import Profile from "/models/profile";
-import { onBeforeMount } from "vue";
+import useStore from "/store";
+import Profile from "/models/profile.js";
 
 export const main = () => {
-  onBeforeMount(() => {
+    const state = useStore();
+
     Profile.objects.many().then((response) => {
-      state.queryset = response;
+        state.queryset = response;
     });
-  });
-  return state;
+    return state;
+};
+
+export const detail = (id) => {
+    const state = useStore();
+
+    Profile.objects.one(id).then((response) => {
+        state.current = response;
+    });
+    return state;
 };

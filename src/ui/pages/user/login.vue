@@ -1,14 +1,10 @@
 <script setup>
-import { ref } from 'vue'
-import { main, login } from "./controller"
-import LoginForm from "/forms/login/form.vue";
-const data = ref({})
-const state = main();
-
+import { login } from "./controller";
+import LoginForm from "/components/forms/login/form.vue";
 </script>
 
 <template>
-  <div class="content">
-    <LoginForm @submit="login"/>
-  </div>
+    <article class="container mx-auto rounded-md shadow-xl p-4">
+        <LoginForm @submit="login" />
+    </article>
 </template>

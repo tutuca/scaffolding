@@ -1,10 +1,17 @@
 import pytest
-from .recipes import profile_recipe
 
 
 @pytest.mark.django_db
-def test_profile_create():
-    profile = profile_recipe.make()
+def test_profile_create(make_profile):
+    profile = make_profile()
 
     assert profile
     assert str(profile)
+
+
+@pytest.mark.django_db
+def test_user_create(make_user):
+    user = make_user()
+
+    assert user
+    assert str(user)

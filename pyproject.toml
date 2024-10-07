@@ -4,19 +4,26 @@ name = "scaffolding"
 readme = "README.md"
 version = "0.0.1"
 
-authors = [{name = "BigPear", email = "hola@bigpear.com.ar"}]
+authors = [{ name = "BigPear", email = "hola@bigpear.com.ar" }]
 dependencies = [
-  "Django==5.0.6",
+  "dj-rest-auth",
+  "django-allauth[socialaccount]",
   "django-cogwheels",
+  "django-cors-headers",
   "django-debug-toolbar",
   "django-environ",
   "django-extensions",
   "django-filter",
   "django-taggit",
   "django-vite",
+  "django==5.1.1",
+  "djangorestframework-simplejwt",
   "djangorestframework",
-  "django-cors-headers",
+  "drf-yasg",
   "gunicorn",
+  "PyJWT",
+  "setuptools>=75.1.0",
+  "drf-spectacular>=0.27.2",
 ]
 
 [project.optional-dependencies]
@@ -37,6 +44,7 @@ dev = [
   "django-stubs",
   "djangorestframework-stubs[compatible-mypy]",
   "bump2version",
+
 ]
 docs = [
   "mkdocs",
@@ -68,12 +76,7 @@ requires = ["setuptools"]
 where = ["src"]
 
 [tool.isort]
-known_first_party = [
-  "home",
-  "scaffolding",
-  "common",
-  "samples",
-]
+known_first_party = ["home", "scaffolding", "common", "samples"]
 
 [tool.flake8]
 exclude = ['**/migrations/**']
@@ -96,17 +99,10 @@ ignore = ["D100", "D101", "D102", "D103"]
 ignore-variadic-names = true
 
 [tool.mypy]
-disable_error_code = [
-  "attr-defined",
-]
-exclude = [
-  "tests/data",
-]
+disable_error_code = ["attr-defined"]
+exclude = ["tests/data"]
 ignore_missing_imports = true
-plugins = [
-  "mypy_django_plugin.main",
-  "mypy_drf_plugin.main",
-]
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 python_version = "3.12"
 
 [tool.django-stubs]
@@ -118,24 +114,17 @@ DJANGO_SETTINGS_MODULE = "scaffolding.settings"
 addopts = [
   "-q",
   "--strict-markers",
-  "--cov=src", #"--cov-report=term",
+  "--cov=src",                                       #"--cov-report=term",
   "--cov-report=html:docs/coverage",
   "--cov-report=xml:docs/coverage/coverage.xml",
   "--junitxml=docs/coverage/junit/test-results.xml",
 ]
-markers = [
-  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-]
+markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
 python_files = "tests.py test_*.py *_tests.py"
-testpaths = [
-  "tests",
-]
+testpaths = ["tests"]
 
 [tool.coverage.run]
 omit = []
 
 [tool.coverage.report]
-exclude_lines = [
-  "pragma: no cover",
-  "@abstractmethod",
-]
+exclude_lines = ["pragma: no cover", "@abstractmethod"]

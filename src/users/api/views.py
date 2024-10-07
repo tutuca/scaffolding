@@ -1,3 +1,4 @@
+
 from rest_framework import permissions, throttling, viewsets
 from .. import models
 
@@ -18,3 +19,23 @@ class ProfileViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
     ]
+
+
+# class AuthToken(ObtainAuthToken):
+#     throttle_classes = [throttling.AnonRateThrottle]
+
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(data=request.data, context={"request": request})
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.validated_data["user"]
+#         token, created = Token.objects.get_or_create(user=user)
+
+#         return Response(
+#             {
+#                 "token": token.key,
+#                 "username": serializer.validated_data["username"],
+#                 "id": user.pk,
+#                 "date_joined": user.date_joined.isoformat(),
+#                 "last_login": user.last_login.isoformat(),
+#             }
+#         )

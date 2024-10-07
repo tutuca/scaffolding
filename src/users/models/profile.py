@@ -1,6 +1,6 @@
+from django.conf import settings
 
 from common.models import models, serializers
-from django.conf import settings
 
 
 class Profile(models.Model):
@@ -13,7 +13,10 @@ class Profile(models.Model):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Profile
-        fields = ["user", "date_created", "date_modified"]
+        fields = [
+            "user",
+            "date_created",
+            "date_modified",
+        ]

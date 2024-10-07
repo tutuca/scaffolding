@@ -1,6 +1,7 @@
-import environ
+from datetime import timedelta
 from pathlib import Path
 
+import environ
 
 env = environ.Env()
 environ.Env.read_env()  # reading .env file
@@ -21,8 +22,14 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 # Application definition
 
 BASE_APPS = (
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.usersessions",
+    "allauth",
     "corsheaders",
     "debug_toolbar",
+    "dj_rest_auth.registration",
+    "dj_rest_auth",
     "django_extensions",
     "django_filters",
     "django_vite",
@@ -33,6 +40,10 @@ BASE_APPS = (
     "django.contrib.sessions",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework.authtoken",
+    "rest_framework_simplejwt",
+    "drf_spectacular",
+
 )
 
 PROJECT_APPS = ("common", "samples", "users")
@@ -50,6 +61,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
+    "allauth.usersessions.middleware.UserSessionsMiddleware",
 ]
 
 ROOT_URLCONF = "scaffolding.urls"
@@ -123,8 +136,64 @@ DJANGO_VITE = {
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+    ],
     "PAGE_SIZE": 12,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'scaffolding API',
+    'DESCRIPTION': 'scaffolding description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+SWAGGER_SETTINGS = {
+    "LOGIN_URL": "/api/auth/login",
+    "LOGOUT_URL": "/api/auth/logout",
 }
 
 AUTH_USER_MODEL = "users.User"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": env.str("GOOGLE_API_CLIENT_ID", default=""),
+            "secret": env.str("GOOGLE_API_SECRET", default=""),
+            "key": env.str("GOOGLE_API_KEY", default=""),
+        }
+    }
+}
+
+# Email
+
+EMAIL_BACKEND = env.str("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+
+# API AUTH
+
+
+# djangorestframework-simplejwt
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
+
+# dj-rest-auth
+REST_AUTH = {
+    "USE_JWT": True,
+    # Name of access token cookie, remove this setting if you don't want access token to be sent as cookie
+    "JWT_AUTH_COOKIE": "_auth",
+    # Name of refresh token cookie, remove this setting if you don't want refresh token to be sent as cookie
+    "JWT_AUTH_REFRESH_COOKIE": "_refresh",
+    "JWT_AUTH_HTTPONLY": False,  # Makes sure refresh token is sent
+    "USER_DETAILS_SERIALIZER": "users.models.user.UserSerializer"
+}
