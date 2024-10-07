@@ -16,6 +16,7 @@ const Authorization = (state) => {
 const buildHeaders = (state) => ({
     "X-CSRFToken": settings.csrf,
     "Content-Type": "application/json",
+    credentials: "same-origin",
     Accept: "application/json",
     ...Authorization(state),
 });
@@ -32,9 +33,11 @@ export default class Manager {
     async doFetch(url, params) {
         // TODO: buy some coupling with vue and use composables
         // https://vuejs.org/guide/reusability/composables#async-state-example
-        params = params || {};
-        params["headers"] = buildHeaders(this.state);
-        const resp = await fetch(url, params);
+
+        const resp = await fetch(url, {
+            ...buildHeaders(this.state),
+            ...params,
+        });
 
         this.state.loading = true;
         if (resp.status >= 400 && resp.status < 600) {
@@ -49,25 +52,20 @@ export default class Manager {
         // generalize headers and credentials in this and doPost
         body = JSON.stringify(cleanParams(body));
 
-        params = {
+        const toFetch = url;
+        const json = await this.doFetch(toFetch, {
             method: "PATCH",
             body: body,
-            credentials: "same-origin",
             ...params,
-        };
-        const toFetch = url;
-        const json = await this.doFetch(toFetch, params);
+        });
 
         return json;
     }
     async doDelete(url, params) {
-        params = {
+        return await doFetch(url, {
             method: "DELETE",
-            credentials: "same-origin",
             ...params,
-        };
-
-        return fetch(url, params);
+        });
     }
     async doPost(url, body, params) {
         body = JSON.stringify(cleanParams(body));
@@ -76,14 +74,11 @@ export default class Manager {
             url = url + "/";
         }
 
-        params = {
+        return this.doFetch(url, {
             method: "POST",
             body: body,
-
-            credentials: "same-origin",
             ...params,
-        };
-        return this.doFetch(url, params);
+        });
     }
 
     async one(objId) {
