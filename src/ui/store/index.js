@@ -13,10 +13,12 @@ const DEFAULT_STATE = {
     queryset: [],
 };
 
-export const useStore = defineStore(
-    STORE_NAME,
-    { state: () => DEFAULT_STATE },
-    { persist: true }
-);
-
+export const useStore = defineStore(STORE_NAME, {
+    state: () => {
+        return DEFAULT_STATE;
+    },
+    persist: {
+        storage: sessionStorage,
+    },
+});
 export default useStore;

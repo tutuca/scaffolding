@@ -2,7 +2,7 @@ import useStore from "/store";
 import settings from "/models/conf";
 import { cleanParams } from "/utils";
 import QuerySet from "./queryset.js";
-
+import Client from "./client.js";
 const Authorization = (state) => {
     let header = {};
     if (state.session && state.session.token) {
@@ -26,64 +26,14 @@ export default class Manager {
         this.model = proto;
         this.url = proto.baseURL;
         this.state = useStore();
+        this.client = new Client(this.state);
     }
     static get queryset() {
         return new QuerySet();
     }
-    async doFetch(url, params) {
-        // TODO: buy some coupling with vue and use composables
-        // https://vuejs.org/guide/reusability/composables#async-state-example
-
-        const resp = await fetch(url, {
-            ...buildHeaders(this.state),
-            ...params,
-        });
-
-        this.state.loading = true;
-        if (resp.status >= 400 && resp.status < 600) {
-            throw resp;
-        }
-        const json = await resp.json();
-        this.state.loading = false;
-        return json;
-    }
-
-    async doPatch(url, body, params) {
-        // generalize headers and credentials in this and doPost
-        body = JSON.stringify(cleanParams(body));
-
-        const toFetch = url;
-        const json = await this.doFetch(toFetch, {
-            method: "PATCH",
-            body: body,
-            ...params,
-        });
-
-        return json;
-    }
-    async doDelete(url, params) {
-        return await doFetch(url, {
-            method: "DELETE",
-            ...params,
-        });
-    }
-    async doPost(url, body, params) {
-        body = JSON.stringify(cleanParams(body));
-
-        if (!url.endsWith("/")) {
-            url = url + "/";
-        }
-
-        return this.doFetch(url, {
-            method: "POST",
-            body: body,
-            ...params,
-        });
-    }
-
     async one(objId) {
         const toFetch = `${this.model.url}/${objId}/`;
-        const json = await this.doFetch(toFetch);
+        const json = await this.client.doFetch(toFetch);
         return new this.model(json);
     }
 
@@ -91,7 +41,8 @@ export default class Manager {
         const cleanedParams = new URLSearchParams(cleanParams(query));
         const qs = new QuerySet();
         const url = `${this.model.url}/?${cleanedParams.toString()}`;
-        const json = await this.doFetch(url);
+        const json = await this.client.doFetch(url);
+
         json.results.forEach((e) => qs.push(new this.model(e)));
 
         qs.count = json.count;
@@ -105,7 +56,7 @@ export default class Manager {
     async create(body, data) {
         const cleanedParams = cleanParams(data);
         const model = this.model;
-        const json = await this.doPost(model.url, body, cleanedParams);
+        const json = await this.client.doPost(model.url, body, cleanedParams);
         const instance = new model(json);
         return instance;
     }

@@ -19,7 +19,7 @@ class UserManager extends Manager {
         // TODO: add token based session.
 
         const url = `${BaseModel.baseURL}/auth/login`;
-        const user = this.doPost(url, data).then((data) => {
+        const user = this.client.doPost(url, data).then((data) => {
             const userData = this.serializeLogin(data);
             return new this.model(userData);
         });
@@ -28,7 +28,7 @@ class UserManager extends Manager {
     getSession(user) {}
     register(data) {
         const url = `${BaseModel.baseURL}/register`;
-        return this.doPost(url, data);
+        return this.client.doPost(url, data);
     }
 }
 
