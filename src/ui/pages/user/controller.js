@@ -1,4 +1,4 @@
-import state from "/store";
+import useStore from "/store";
 import router from "/router";
 import User from "/models/user";
 
@@ -11,7 +11,7 @@ function loginError(error) {
 
   return error;
 }
-function loginSuccess(user) {
+function loginSuccess(user, state) {
   state.session = {
     token: user.access_token,
     user: user,
@@ -20,6 +20,7 @@ function loginSuccess(user) {
 }
 
 export async function login(form, formData) {
+  const state = useStore();
   const data = form.data;
 
   // Show loading spinner
@@ -35,12 +36,13 @@ export async function login(form, formData) {
   }
 
   if (user) {
-    loginSuccess(user);
+    loginSuccess(user, state);
   }
   return state;
 }
 
 export async function logout(form, formData) {
+  const state = useStore();
   const data = form.data;
 
   // Show loading spinner
@@ -62,6 +64,7 @@ export async function logout(form, formData) {
 }
 
 export async function register(form) {
+  const state = useStore();
   const data = form.requestData;
   // Show loading spinner
   form.submitting = state.loading;

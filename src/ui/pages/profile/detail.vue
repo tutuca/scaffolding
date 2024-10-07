@@ -1,11 +1,12 @@
 
 <script setup>
-import state from "/store";
+import useStore from "/store";
 import { onBeforeMount } from "vue";
 
 import { detail } from "./controller"
 
 const props = defineProps(['id']);
+const state = useStore();
 
 
 onBeforeMount(()=> {

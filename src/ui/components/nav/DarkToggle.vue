@@ -1,7 +1,10 @@
 <script setup>
-import state from "/store";
+// XXX: not working on chrome for some reason
+import useStore from "/store";
 import { computed } from 'vue'
 import { useDark, useToggle } from "@vueuse/core";
+
+const state = useStore();
 
 const isDark = useDark({
     selector: "html",

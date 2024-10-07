@@ -1,5 +1,6 @@
 <script setup>
-import state from "/store";
+import useStore from "/store";
+const state = useStore();
 
 </script>
 <template>
