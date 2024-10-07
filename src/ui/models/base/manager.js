@@ -1,9 +1,9 @@
-import state from "/store";
+import useStore from "/store";
 import settings from "/models/conf";
 import { cleanParams } from "/utils";
 import QuerySet from "./queryset.js";
 
-const Authorization = () => {
+const Authorization = (state) => {
   let header = {};
   if (state.session && state.session.token) {
     header["Authorization"] = `bearer ${
@@ -13,17 +13,18 @@ const Authorization = () => {
   return header;
 };
 
-const buildHeders = () => ({
+const buildHeaders = (state) => ({
   "X-CSRFToken": settings.csrf,
   "Content-Type": "application/json",
   Accept: "application/json",
-  ...Authorization(),
+  ...Authorization(state),
 });
 
 export default class Manager {
   constructor(proto) {
     this.model = proto;
     this.url = proto.baseURL;
+    this.state = useStore();
   }
   static get queryset() {
     return new QuerySet();
@@ -31,13 +32,16 @@ export default class Manager {
   async doFetch(url, params) {
     // TODO: buy some coupling with vue and use composables
     // https://vuejs.org/guide/reusability/composables#async-state-example
+    params = params || {};
+    params["headers"] = buildHeaders(this.state);
     const resp = await fetch(url, params);
-    state.loading = true;
+
+    this.state.loading = true;
     if (resp.status >= 400 && resp.status < 600) {
       throw resp;
     }
     const json = await resp.json();
-    state.loading = false;
+    this.state.loading = false;
     return json;
   }
 
@@ -48,7 +52,6 @@ export default class Manager {
     params = {
       method: "PATCH",
       body: body,
-      headers: buildHeders(),
       credentials: "same-origin",
       ...params,
     };
@@ -60,7 +63,6 @@ export default class Manager {
   async doDelete(url, params) {
     params = {
       method: "DELETE",
-      headers: buildHeders(),
       credentials: "same-origin",
       ...params,
     };
@@ -77,7 +79,7 @@ export default class Manager {
     params = {
       method: "POST",
       body: body,
-      headers: buildHeders(),
+
       credentials: "same-origin",
       ...params,
     };
