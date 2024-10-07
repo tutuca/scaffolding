@@ -2,7 +2,7 @@
 const props = defineProps(["item"]);
 </script>
 <template>
-    <article class="card bg-base-100 w-96 shadow-xl" v-if="item">
+    <article class="card bg-base-100 w-90 shadow-xl" v-if="item">
         <div class="card-body">
             <h2 class="card-title">{{ item.title }}</h2>
             <p>{{ item.description }}</p>

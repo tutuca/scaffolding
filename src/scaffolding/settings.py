@@ -43,10 +43,13 @@ BASE_APPS = (
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
     "drf_spectacular",
-
 )
 
-PROJECT_APPS = ("common", "samples", "users")
+PROJECT_APPS = (
+    "common",
+    "samples",
+    "users",
+)
 
 INSTALLED_APPS = BASE_APPS + PROJECT_APPS
 
@@ -146,10 +149,10 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'scaffolding API',
-    'DESCRIPTION': 'scaffolding description',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
+    "TITLE": "scaffolding API",
+    "DESCRIPTION": "scaffolding description",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 SWAGGER_SETTINGS = {
     "LOGIN_URL": "/api/auth/login",
@@ -195,5 +198,5 @@ REST_AUTH = {
     # Name of refresh token cookie, remove this setting if you don't want refresh token to be sent as cookie
     "JWT_AUTH_REFRESH_COOKIE": "_refresh",
     "JWT_AUTH_HTTPONLY": False,  # Makes sure refresh token is sent
-    "USER_DETAILS_SERIALIZER": "users.models.user.UserSerializer"
+    "USER_DETAILS_SERIALIZER": "users.models.user.UserSerializer",
 }
