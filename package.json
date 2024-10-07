@@ -13,6 +13,7 @@
     "@vueform/vueform": "^1.10.4",
     "@vueuse/core": "^11.1.0",
     "dayjs": "^1.11.13",
+    "pinia": "^2.2.4",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3",
     "vuex": "^4.1.0"

@@ -17,5 +17,5 @@ test("Create empty sample", async () => {
   const sample = await Sample.objects.create({ title: title });
   expect(sample).toBeInstanceOf(Sample);
   expect(sample.id).toBe(1);
-  expect(sample.route()).toBe("/samples/1");
+  expect(sample.route).toBe("/samples/1");
 });

@@ -1,24 +1,20 @@
-import { reactive, watch } from "vue";
-import { useStorage } from "@vueuse/core";
+import { defineStore } from "pinia";
 
-const defaultState = {
-  current: null,
-  loading: true,
-  model: null,
-  nextPage: "",
-  prevPage: "",
-  query: {},
-  theme: null,
-  session: null,
-  queryset: [],
-};
-const state = reactive(defaultState);
+export const useStore = defineStore("state", {
+  // arrow function recommended for full type inference
+  state: () => {
+    return {
+      current: null,
+      loading: true,
+      model: null,
+      nextPage: "",
+      prevPage: "",
+      query: {},
+      theme: null,
+      session: null,
+      queryset: [],
+    };
+  },
+});
 
-const localState = useStorage(
-  "application-local-storage",
-  state,
-  localStorage,
-  { mergeDefaults: true },
-);
-
-export default state;
+export default useStore;
