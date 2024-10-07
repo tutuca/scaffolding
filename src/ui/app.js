@@ -6,15 +6,15 @@ import Vueform from "@vueform/vueform";
 import vueformConfig from "./vueform.config";
 
 function initApp(component, selector) {
-  const app = createApp(component);
-  const pinia = createPinia();
-  pinia.use(piniaPluginPersistedstate);
-  app.use(pinia);
-  app.use(router);
+    const app = createApp(component);
+    const pinia = createPinia();
+    pinia.use(piniaPluginPersistedstate);
+    app.use(pinia);
+    app.use(router);
 
-  app.use(Vueform, vueformConfig);
-  app.mount(selector);
-  return app;
+    app.use(Vueform, vueformConfig);
+    app.mount(selector);
+    return app;
 }
 
 export default initApp;

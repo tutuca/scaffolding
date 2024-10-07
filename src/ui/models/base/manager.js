@@ -4,134 +4,134 @@ import { cleanParams } from "/utils";
 import QuerySet from "./queryset.js";
 
 const Authorization = (state) => {
-  let header = {};
-  if (state.session && state.session.token) {
-    header["Authorization"] = `bearer ${
-      state.session ? state.session.token : null
-    }`;
-  }
-  return header;
+    let header = {};
+    if (state.session && state.session.token) {
+        header["Authorization"] = `bearer ${
+            state.session ? state.session.token : null
+        }`;
+    }
+    return header;
 };
 
 const buildHeaders = (state) => ({
-  "X-CSRFToken": settings.csrf,
-  "Content-Type": "application/json",
-  Accept: "application/json",
-  ...Authorization(state),
+    "X-CSRFToken": settings.csrf,
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    ...Authorization(state),
 });
 
 export default class Manager {
-  constructor(proto) {
-    this.model = proto;
-    this.url = proto.baseURL;
-    this.state = useStore();
-  }
-  static get queryset() {
-    return new QuerySet();
-  }
-  async doFetch(url, params) {
-    // TODO: buy some coupling with vue and use composables
-    // https://vuejs.org/guide/reusability/composables#async-state-example
-    params = params || {};
-    params["headers"] = buildHeaders(this.state);
-    const resp = await fetch(url, params);
-
-    this.state.loading = true;
-    if (resp.status >= 400 && resp.status < 600) {
-      throw resp;
+    constructor(proto) {
+        this.model = proto;
+        this.url = proto.baseURL;
+        this.state = useStore();
     }
-    const json = await resp.json();
-    this.state.loading = false;
-    return json;
-  }
+    static get queryset() {
+        return new QuerySet();
+    }
+    async doFetch(url, params) {
+        // TODO: buy some coupling with vue and use composables
+        // https://vuejs.org/guide/reusability/composables#async-state-example
+        params = params || {};
+        params["headers"] = buildHeaders(this.state);
+        const resp = await fetch(url, params);
 
-  async doPatch(url, body, params) {
-    // generalize headers and credentials in this and doPost
-    body = JSON.stringify(cleanParams(body));
-
-    params = {
-      method: "PATCH",
-      body: body,
-      credentials: "same-origin",
-      ...params,
-    };
-    const toFetch = url;
-    const json = await this.doFetch(toFetch, params);
-
-    return json;
-  }
-  async doDelete(url, params) {
-    params = {
-      method: "DELETE",
-      credentials: "same-origin",
-      ...params,
-    };
-
-    return fetch(url, params);
-  }
-  async doPost(url, body, params) {
-    body = JSON.stringify(cleanParams(body));
-
-    if (!url.endsWith("/")) {
-      url = url + "/";
+        this.state.loading = true;
+        if (resp.status >= 400 && resp.status < 600) {
+            throw resp;
+        }
+        const json = await resp.json();
+        this.state.loading = false;
+        return json;
     }
 
-    params = {
-      method: "POST",
-      body: body,
+    async doPatch(url, body, params) {
+        // generalize headers and credentials in this and doPost
+        body = JSON.stringify(cleanParams(body));
 
-      credentials: "same-origin",
-      ...params,
-    };
-    return this.doFetch(url, params);
-  }
+        params = {
+            method: "PATCH",
+            body: body,
+            credentials: "same-origin",
+            ...params,
+        };
+        const toFetch = url;
+        const json = await this.doFetch(toFetch, params);
 
-  async one(objId) {
-    const toFetch = `${this.model.url}/${objId}/`;
-    const json = await this.doFetch(toFetch);
-    return new this.model(json);
-  }
-
-  async many(query) {
-    const cleanedParams = new URLSearchParams(cleanParams(query));
-    const qs = new QuerySet();
-    const url = `${this.model.url}/?${cleanedParams.toString()}`;
-    const json = await this.doFetch(url);
-    json.results.forEach((e) => qs.push(new this.model(e)));
-
-    qs.count = json.count;
-    qs.page = cleanedParams.page;
-    qs.nextPage = json.next;
-    qs.previousPage = json.previous;
-
-    return qs;
-  }
-
-  async create(body, data) {
-    const cleanedParams = cleanParams(data);
-    const model = this.model;
-    const json = await this.doPost(model.url, body, cleanedParams);
-    const instance = new model(json);
-    return instance;
-  }
-
-  async getOrCreate(id, body) {
-    let instance;
-    let maybe_created = id !== null;
-    if (maybe_created) {
-      try {
-        // get it and update it
-        instance = await this.one(id);
-        instance.save({ ...body, id });
-      } catch (e) {
-        // or create it
-        // TODO catch specific errors.
-        instance = this.create({ ...body, id });
-      }
-    } else {
-      // then create it
-      instance = this.create({ ...body, id });
+        return json;
     }
-    return instance;
-  }
+    async doDelete(url, params) {
+        params = {
+            method: "DELETE",
+            credentials: "same-origin",
+            ...params,
+        };
+
+        return fetch(url, params);
+    }
+    async doPost(url, body, params) {
+        body = JSON.stringify(cleanParams(body));
+
+        if (!url.endsWith("/")) {
+            url = url + "/";
+        }
+
+        params = {
+            method: "POST",
+            body: body,
+
+            credentials: "same-origin",
+            ...params,
+        };
+        return this.doFetch(url, params);
+    }
+
+    async one(objId) {
+        const toFetch = `${this.model.url}/${objId}/`;
+        const json = await this.doFetch(toFetch);
+        return new this.model(json);
+    }
+
+    async many(query) {
+        const cleanedParams = new URLSearchParams(cleanParams(query));
+        const qs = new QuerySet();
+        const url = `${this.model.url}/?${cleanedParams.toString()}`;
+        const json = await this.doFetch(url);
+        json.results.forEach((e) => qs.push(new this.model(e)));
+
+        qs.count = json.count;
+        qs.page = cleanedParams.page;
+        qs.nextPage = json.next;
+        qs.previousPage = json.previous;
+
+        return qs;
+    }
+
+    async create(body, data) {
+        const cleanedParams = cleanParams(data);
+        const model = this.model;
+        const json = await this.doPost(model.url, body, cleanedParams);
+        const instance = new model(json);
+        return instance;
+    }
+
+    async getOrCreate(id, body) {
+        let instance;
+        let maybe_created = id !== null;
+        if (maybe_created) {
+            try {
+                // get it and update it
+                instance = await this.one(id);
+                instance.save({ ...body, id });
+            } catch (e) {
+                // or create it
+                // TODO catch specific errors.
+                instance = this.create({ ...body, id });
+            }
+        } else {
+            // then create it
+            instance = this.create({ ...body, id });
+        }
+        return instance;
+    }
 }

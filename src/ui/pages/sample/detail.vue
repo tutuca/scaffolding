@@ -1,11 +1,9 @@
 <script setup>
+import { detail } from "./controller";
 
-import { detail } from "./controller"
-
-const props = defineProps(['id']);
+const props = defineProps(["id"]);
 
 const state = detail(props.id);
-
 </script>
 
 <template>

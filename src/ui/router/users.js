@@ -4,23 +4,23 @@ import LogoutView from "/pages/user/logout.vue";
 import RegisterView from "/pages/user/register.vue";
 
 export default [
-  {
-    path: "/user/",
-    component: UserView,
-    children: [
-      {
-        path: "login",
-        component: LoginView,
-      },
-      {
-        path: "logout",
-        component: LogoutView,
-      },
+    {
+        path: "/user/",
+        component: UserView,
+        children: [
+            {
+                path: "login",
+                component: LoginView,
+            },
+            {
+                path: "logout",
+                component: LogoutView,
+            },
 
-      {
-        path: "register",
-        component: RegisterView,
-      },
-    ],
-  },
+            {
+                path: "register",
+                component: RegisterView,
+            },
+        ],
+    },
 ];

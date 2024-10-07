@@ -1,10 +1,8 @@
 <script setup>
-
-import { main } from "./controller"
+import { main } from "./controller";
 import List from "/components/List.vue";
 
 const state = main();
-
 </script>
 
 <template>

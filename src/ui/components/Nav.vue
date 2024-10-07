@@ -14,7 +14,9 @@ import Burger from "./nav/Burger.vue";
         <div class="navbar-end hidden lg:flex">
             <ul class="menu menu-horizontal z-50">
                 <li>
-                    <router-link class="navbar-item" to="/samples">Samples</router-link>
+                    <router-link class="navbar-item" to="/samples"
+                        >Samples</router-link
+                    >
                 </li>
                 <li>
                     <session />

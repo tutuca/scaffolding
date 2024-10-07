@@ -7,7 +7,9 @@
             </router-link>
         </li>
         <li>
-            <router-link class="button is-light" to="/user/login">Log in</router-link>
+            <router-link class="button is-light" to="/user/login"
+                >Log in</router-link
+            >
         </li>
     </ul>
 </template>

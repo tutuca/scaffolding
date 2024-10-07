@@ -4,22 +4,22 @@ import DetailView from "./detail.vue";
 
 // very gusta anonymous export default :)
 export default [
-  {
-    path: "/samples",
+    {
+        path: "/samples",
 
-    component: Page,
-    children: [
-      {
-        path: "",
-        name: "samplesList",
-        component: ListView,
-      },
-      {
-        path: ":id",
-        name: "samplesDetail",
-        component: DetailView,
-        props: true,
-      },
-    ],
-  },
+        component: Page,
+        children: [
+            {
+                path: "",
+                name: "samplesList",
+                component: ListView,
+            },
+            {
+                path: ":id",
+                name: "samplesDetail",
+                component: DetailView,
+                props: true,
+            },
+        ],
+    },
 ];

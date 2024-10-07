@@ -3,73 +3,73 @@ import router from "/router";
 import User from "/models/user";
 
 export function main() {
-  return state;
+    return state;
 }
 
 function loginError(error) {
-  console.log(error);
+    console.log(error);
 
-  return error;
+    return error;
 }
 function loginSuccess(user, state) {
-  state.session = {
-    token: user.access_token,
-    user: user,
-  };
-  return router.push({ name: "profileDetail", params: { id: user.id } });
+    state.session = {
+        token: user.access_token,
+        user: user,
+    };
+    return router.push({ name: "profileDetail", params: { id: user.id } });
 }
 
 export async function login(form, formData) {
-  const state = useStore();
-  const data = form.data;
+    const state = useStore();
+    const data = form.data;
 
-  // Show loading spinner
-  form.submitting = true;
-  let user;
+    // Show loading spinner
+    form.submitting = true;
+    let user;
 
-  try {
-    user = await User.objects.login(data);
-  } catch (error) {
-    return loginError(error);
-  } finally {
-    form.submitting = false;
-  }
+    try {
+        user = await User.objects.login(data);
+    } catch (error) {
+        return loginError(error);
+    } finally {
+        form.submitting = false;
+    }
 
-  if (user) {
-    loginSuccess(user, state);
-  }
-  return state;
+    if (user) {
+        loginSuccess(user, state);
+    }
+    return state;
 }
 
 export async function logout(form, formData) {
-  const state = useStore();
-  const data = form.data;
+    const state = useStore();
+    const data = form.data;
 
-  // Show loading spinner
-  form.submitting = true;
-  let user;
+    // Show loading spinner
+    form.submitting = true;
+    let user;
 
-  try {
-    user = await User.objects.logout(data);
-  } catch (error) {
-    return loginError(error);
-  } finally {
-    form.submitting = false;
-  }
+    try {
+        user = await User.objects.logout(data);
+    } catch (error) {
+        return loginError(error);
+    } finally {
+        form.submitting = false;
+    }
 
-  if (user) {
-    loginSuccess(user);
-  }
-  return state;
+    if (user) {
+        loginSuccess(user);
+    }
+    return state;
 }
 
 export async function register(form) {
-  const state = useStore();
-  const data = form.requestData;
-  // Show loading spinner
-  form.submitting = state.loading;
-
-  User.objects.register(data).then((r) => {
+    const state = useStore();
+    const data = form.requestData;
+    // Show loading spinner
     form.submitting = state.loading;
-  });
+
+    User.objects.register(data).then((r) => {
+        form.submitting = state.loading;
+    });
 }
