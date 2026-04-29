@@ -14,7 +14,7 @@ const Authorization = (state) => {
 const buildHeaders = (state) => ({
     "X-CSRFToken": settings.csrf,
     "Content-Type": "application/json",
-    credentials: "same-origin",
+    // credentials: "same-origin",
     Accept: "application/json",
     ...Authorization(state),
 });

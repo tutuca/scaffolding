@@ -3,7 +3,7 @@ description = "scaffolding"
 name = "scaffolding"
 readme = "README.md"
 version = "0.0.1"
-
+requires-python = "==3.13"
 authors = [{ name = "BigPear", email = "hola@bigpear.com.ar" }]
 dependencies = [
   "dj-rest-auth",
