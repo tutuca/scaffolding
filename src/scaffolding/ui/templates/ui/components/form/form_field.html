@@ -1,0 +1,10 @@
+{# Django's own `django/forms/field.html` with two changes. The server's errors and an empty, hidden error list that `form.js` fills with the browser's message while the reader types are one box, `messages`, so a field is label, hint, widget and, after them, the messages, which the css lays under the field without taking a row. The slot is here, in the markup, so no script has to make any. #}
+{% if field.use_fieldset %}
+  <fieldset{% if field.aria_describedby %} aria-describedby="{{ field.aria_describedby }}"{% endif %}>
+  {% if field.label %}{{ field.legend_tag }}{% endif %}
+{% else %}
+  {% if field.label %}{{ field.label_tag }}{% endif %}
+{% endif %}
+{% if field.help_text %}<div class="helptext"{% if field.auto_id %} id="{{ field.auto_id }}_helptext"{% endif %}>{{ field.help_text|safe }}</div>{% endif %}
+{{ field }}{% if field.use_fieldset %}</fieldset>{% endif %}
+<div class="messages">{{ field.errors }}<ul class="errorlist" data-live hidden aria-live="polite"><li></li></ul></div>

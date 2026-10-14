@@ -1,0 +1,27 @@
+/* A dialog is the one place a form interrupts the page: modal, the width of a form,
+   dressed in the page's own surface. The browser gives it focus, Esc and the
+   backdrop. */
+dialog {
+    width: min(calc(var(--measure) - var(--gap) * 2), calc(100vw - var(--gap) * 2));
+    max-height: calc(100svh - var(--gap) * 2);
+    overflow-y: auto;
+    padding: calc(var(--gap) * 1.5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--ink);
+    &::backdrop {
+        background: color-mix(in srgb, var(--ink), transparent 55%);
+    }
+    & h3 {
+        margin-block-start: 0;
+    }
+}
+
+/* The way out and the way on are apart: what commits at the right, where the eye ends the
+   form, and the way out at the left. The markup keeps the commit first - it is what Enter
+   sends and where Tab arrives - and the layout reverses it. */
+dialog form > .cluster {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}

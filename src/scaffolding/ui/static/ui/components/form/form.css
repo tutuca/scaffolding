@@ -1,0 +1,189 @@
+/* Controls: the page's own buttons, fields and forms, in one place - the form
+   component's stylesheet (`components/form/`, beside `form.js`), loaded with
+   every page.
+
+   Not the admin (it brings its own and never loads this file). Everything is an
+   expression of the tokens: the brand pole is the one action colour, the line is
+   every border, the danger hue is only ever an error. No class names a field -
+   Django's div layout (`{{ form }}`) and the attributes the browser and Django
+   already set (`type`, `aria-invalid`, `:user-invalid`) carry the whole look, so
+   the next form arrives dressed.
+
+   Two weights of button, by what it does and not by a class: a button that
+   submits is the action (filled brand), one that does not (`type="button"`: open a
+   dialog, cancel, reset) is the way around it (outlined). Same words as the
+   hierarchy rule in DESIGN: contrast is hierarchy. */
+main {
+    /* `:where()` keeps these as plain as `main` itself, so a rule with a class of its
+       own - a row's verb, a header that sorts - overrides them without a fight. */
+    & :where(button, input[type="submit"]) {
+        font: inherit;
+        padding: calc(var(--gap) * 0.4) calc(var(--gap) * 0.9);
+        border: 1px solid var(--brand);
+        border-radius: var(--radius);
+        background: var(--brand);
+        color: var(--brand-ink);
+        cursor: pointer;
+    }
+    & :where(button[type="button"]) {
+        background: transparent;
+        color: var(--brand);
+    }
+    /* What commits is green; what only opens, or asks, is the brand's. A search is sent but
+       commits nothing, so its button is the brand's too. */
+    & :where(button[type="submit"], input[type="submit"]) {
+        background: var(--ok);
+        border-color: var(--ok);
+    }
+    & form[method="get" i] :where(button[type="submit"]) {
+        background: var(--brand);
+        border-color: var(--brand);
+    }
+    & :where(input:not([type="checkbox"], [type="radio"], [type="file"]), select) {
+        /* One height for every field, so a row of a date, a number and a choice is a row. */
+        block-size: calc(var(--gap) * 2.5);
+    }
+    /* A choice is drawn by us, not by the system: the same box as its neighbours and an arrow
+       in the ink around it. */
+    & select {
+        appearance: none;
+        padding-inline-end: calc(var(--gap) * 2);
+        background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+            linear-gradient(135deg, currentColor 50%, transparent 50%);
+        background-position: calc(100% - var(--gap) * 1.1) 55%, calc(100% - var(--gap) * 0.75) 55%;
+        background-size: calc(var(--gap) * 0.35) calc(var(--gap) * 0.35);
+        background-repeat: no-repeat;
+        cursor: pointer;
+    }
+    & :where(input, select, textarea) {
+        font: inherit;
+        padding: calc(var(--gap) * 0.4) calc(var(--gap) * 0.5);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        color: var(--ink);
+        max-width: 100%;
+        accent-color: var(--brand);
+        /* The file picker's own button is a button the person presses: the way around. */
+        &::file-selector-button {
+            font: inherit;
+            padding: calc(var(--gap) * 0.2) calc(var(--gap) * 0.7);
+            margin-inline-end: var(--gap);
+            border: 1px solid var(--brand);
+            border-radius: var(--radius);
+            background: transparent;
+            color: var(--brand);
+            cursor: pointer;
+        }
+    }
+    /* Django marks a widget that erred (`aria-invalid`); the browser marks one the
+       reader has left wrong (`:user-invalid`, never before they have touched it).
+       Either way the border says so beside the message. */
+    & :where(input, select, textarea):is([aria-invalid="true"], :user-invalid) {
+        border-color: var(--danger);
+    }
+
+    /* A form is Django's own div layout: each field is a div of label, hint and widget, then the
+       messages (`form_field.html`). The fields sit on a grid whose rows are
+       shared: a field is a subgrid of three rows, so beside a field with a long hint the next one
+       has the same hint row and its widget on the same line, whatever the words. Short fields (a
+       number, a date, a choice) sit two to a row as long as the box holds two of them; a long one
+       (text, a file) and everything that is not a field (the errors, the buttons) takes the
+       whole row. */
+    & form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--gap) * 12)), 1fr));
+        column-gap: var(--gap);
+        row-gap: 0;
+        align-items: start;
+        & > div {
+            /* A field may be narrower than its widget wants to be (a file input is as wide as the
+               name of the file it holds): the widget shrinks, the page does not scroll sideways. */
+            min-width: 0;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            grid-row: span 3;
+            grid-template-rows: subgrid;
+            row-gap: 0;
+            position: relative;
+            padding-block-end: calc(var(--gap) * 1.25);
+            & > label,
+            & > fieldset > legend {
+                grid-row: 1;
+                margin-block-end: calc(var(--gap) * 0.3);
+            }
+            & > .helptext {
+                grid-row: 2;
+                margin-block-end: calc(var(--gap) * 0.3);
+            }
+            & > :is(input, select, textarea, fieldset) {
+                grid-row: 3;
+            }
+            /* The messages hang under the widget, in the room the field keeps below it: a
+               message appearing moves nothing, and reading goes label, hint, widget, reason.
+               One notch below the prose, from the token rather than a literal. */
+            & > .messages {
+                position: absolute;
+                inset-inline: 0;
+                inset-block-end: 0;
+                font-size: var(--text-s);
+                line-height: 1.2;
+                pointer-events: none;
+            }
+        }
+        & > :not(div),
+        & > div:has(input:is([type="text"], [type="search"], [type="file"]), textarea) {
+            grid-column: 1 / -1;
+        }
+        & > :not(div, .cluster) {
+            margin-block-end: var(--gap);
+        }
+        & > button {
+            justify-self: start;
+        }
+        & > .cluster {
+            align-items: center;
+            margin: 0;
+        }
+        & .helptext {
+            color: var(--ink-quiet);
+            font-size: var(--text-s);
+        }
+    }
+}
+
+/* The button that confirms a discard is the danger hue filled, as the action is the
+   brand's. */
+main :where(button[data-danger]) {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: var(--brand-ink);
+}
+
+.errorlist {
+    color: var(--danger);
+    margin: 0;
+    padding-left: var(--gap);
+}
+
+/* A label the screen reader needs and the page already says another way. The one
+   hiding class: a cell's tooltip label (`table/table.css`) uses it too. */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    main button:not(.icon-button),
+    main input[type="submit"] {
+        transition: filter 0.15s ease, box-shadow 0.15s ease;
+        &:hover {
+            filter: brightness(1.12);
+            box-shadow: 0 2px 6px color-mix(in srgb, var(--ink), transparent 80%);
+        }
+    }
+}

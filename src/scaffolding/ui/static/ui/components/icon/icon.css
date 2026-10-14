@@ -1,0 +1,7 @@
+/* An icon of the sprite (`icon.html`): a little larger than the letters beside it, in their ink. */
+.icon {
+    display: inline-block;
+    width: 1.15em;
+    height: 1.15em;
+    vertical-align: -0.2em;
+}

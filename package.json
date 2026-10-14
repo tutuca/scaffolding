@@ -1,0 +1,11 @@
+{
+  "name": "scaffolding",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "make test-js",
+    "lint": "node bin/js.mjs lint",
+    "format": "node bin/js.mjs format",
+    "format:check": "node bin/js.mjs format --check"
+  }
+}

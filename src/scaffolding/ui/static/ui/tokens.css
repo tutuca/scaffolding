@@ -1,0 +1,77 @@
+/* The one source. Everything else maps these onto whatever framework it is
+   dressing - Django's 42 custom properties - and nothing else
+   invents a colour.
+
+   Ten literal free choices; every other token is an expression of them, so
+   changing a base re-tunes the family. Chosen 2026-09-19 from three live
+   candidates (warm ledger green, chart blue, editorial aubergine): the chart
+   blue - `--brand` is the `needs` chart hue darkened to clear AA and
+   `--danger` the `undecided` red likewise, so a page and a figure read as one
+   instrument. Light only for now.
+   `tests/scaffolding/ui/` holds the grammar: at most ten literals, AA contrast
+   on every pair used together, no dead names. */
+:root {
+  --surface: #EFEFEF;
+  --ink: #191a1c;
+  --brand: #40639c;
+  --danger: #ad3e42;
+  --gap: 1rem;
+  --radius: 3px;
+  --ratio: 1.25;
+  --measure: 66ch;
+
+  /* The origin: the one x every figure starts at. Centering moved it with the
+     viewport, so no two charts agreed on where their left edge was and the eye
+     re-zeroed on each one. It is measured in lines of the leading (below), so the
+     indent and the rhythm are one ruler: a phone gets one line, a desktop nine,
+     a widescreen twelve. Derived (`calc`/`var`), so it is not an eleventh free
+     choice. */
+  --origin: var(--rhythm);
+
+  /* `--brand` and not `--accent`: Django's admin declares `--accent` among its
+     own 42, and both blocks land on `:root`, so sharing the name would make
+     `--accent: var(--accent)` circular and silently invalid. No other name here
+     collides - checked against the 42. */
+
+  --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  --bg: color-mix(in srgb, var(--surface), var(--ink) 1%);
+  --ink-quiet: color-mix(in srgb, var(--ink), var(--surface) 35%);
+  --line: color-mix(in srgb, var(--ink), var(--surface) 86%);
+  --brand-ink: var(--surface);
+  /* The colour of what commits - a submit - the chart's income green darkened until the page's
+     own ink on it clears AA. Derived, so it is not an eleventh free choice. */
+  --ok: color-mix(in srgb, var(--chart-income), var(--ink) 38%);
+
+  --text-s: calc(1rem / var(--ratio));
+  --text: 1rem;
+  --text-xl: calc(1rem * var(--ratio) * var(--ratio));
+
+  /* The vertical rhythm: one leading, as a length. Blocks are spaced in whole
+     and half lines of this, never in a second unit — §2.2.2, "add and delete
+     vertical space in measured intervals". The same 1.55 is the leading in the
+     `font` shorthand in page.css; there it is a ratio so descendants scale, here
+     it is a length so margins can sit on it. Derived (`calc`), so it is not an
+     eleventh free choice. */
+  --rhythm: calc(var(--text) * 1.55);
+
+  /* The chart palette, the one table every figure quotes. Literal and exempt from the ten:
+     categorical encoding wants distinct hues, and a neutral base is the wrong
+     input for that. */
+  --chart-needs: #4c72b0;
+  --chart-wants: #dd8452;
+  --chart-structural: #9a9a9a;
+  --chart-income: #55a868;
+  --chart-undecided: #c44e52;
+}
+
+/* The origin widens with the page, in the same ruler: nine lines on a desktop,
+   twelve on a widescreen. */
+@media (min-width: 64rem) {
+  :root { --origin: calc(var(--rhythm) * 9); }
+}
+
+@media (min-width: 100rem) {
+  :root { --origin: calc(var(--rhythm) * 12); }
+}

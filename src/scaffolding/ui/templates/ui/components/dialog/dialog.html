@@ -1,0 +1,13 @@
+{# A dialog that asks, and the form it asks with. `id` is what a button's `commandfor` names; `title` heads it; `text` explains; `form` is a Django form, drawn by `{{ form }}`, and none is a question with no fields; `action` is where it posts, `submit` what the button says, `danger` marks one that discards. The server sends it `open` when `opened` is its id: a refused form, shown as a dialog again. Closing, Esc, a click outside (`closedby="any"`), the backdrop and the focus are the browser's. #}
+<dialog id="{{ id }}" aria-labelledby="{{ id }}-titulo" closedby="any"{% if opened == id %} open{% endif %}>
+  <h3 id="{{ id }}-titulo">{{ title }}</h3>
+  {% if text %}<p>{{ text }}</p>{% endif %}
+  <form method="post" action="{{ action }}" data-swap>
+    {% csrf_token %}
+    {% if form %}{{ form }}{% endif %}
+    <p class="cluster">
+      <button type="submit"{% if danger %} data-danger{% endif %}>{{ submit }}</button>
+      <button type="button" command="close" commandfor="{{ id }}">Cancelar</button>
+    </p>
+  </form>
+</dialog>

@@ -1,0 +1,32 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es-ar">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% block description %}Los libros de un contribuyente: comprobantes, movimientos, inversiones y préstamos.{% endblock %}">
+  <title>{% block title %}scaffolding{% endblock %}</title>
+  {% include "ui/favicon.html" %}
+  <link rel="stylesheet" href="{% static 'ui/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/chrome.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/page.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/components/form/form.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/components/icon/icon.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/components/action/action.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/components/dialog/dialog.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/telescope.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/table/table.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/grid/grid.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/charts/charts.css' %}">
+  <script type="module" src="{% static 'ui/main.js' %}"></script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="chrome-skip" href="#main">Saltar al contenido</a>
+  <header class="chrome-header">
+    <div>
+      {% include "ui/nav.html" %}
+    </div>
+  </header>
+  <main id="main" tabindex="-1">{% block main %}{% endblock %}</main>
+  <footer class="chrome-footer">{% include "ui/footer.html" %}</footer>
+</body>
+</html>
