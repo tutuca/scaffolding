@@ -38,3 +38,7 @@ Not checked by a linter. They are commitments between the people on the project.
   under-regulated. The people who build it organize, and the tools we make should
   treat people with dignity: operators, reporters, and users alike.
   ("Software, Trabajo, Derechos.")
+
+---
+
+Sources for these values: [`REFERENCES.md`](REFERENCES.md).

@@ -16,3 +16,4 @@ This is the scaffold's documentation. It is organized by who is reading it:
 | [`docs/WORKFLOW.md`](WORKFLOW.md) | Trunk-based workflow. |
 | [`docs/INFRASTRUCTURE.md`](INFRASTRUCTURE.md) | Serving, the wheel, the sandbox. |
 | [`docs/CLI.md`](CLI.md) | CLI decisions. |
+| [`docs/REFERENCES.md`](REFERENCES.md) | Sources for the architecture, method, values, and docs structure. |

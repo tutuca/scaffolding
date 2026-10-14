@@ -74,3 +74,7 @@ explicit and separate.
 
 The branch-and-merge mechanics that carry this method live in
 [`WORKFLOW.md`](WORKFLOW.md).
+
+---
+
+The sources this method draws on: [`REFERENCES.md`](REFERENCES.md).
