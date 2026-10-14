@@ -1,0 +1,49 @@
+/* An action is a button that is only its icon: quiet until it is pointed at, and named
+   for the screen reader and the tooltip by the markup (`action.html`). The one that discards
+   turns to the danger hue, never before. */
+button.icon-button {
+    display: inline-grid;
+    place-items: center;
+    width: 2em;
+    height: 2em;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--ink-quiet);
+    text-decoration: none;
+    cursor: pointer;
+    /* Pointed at, an action takes a tint of its own hue behind it and its ink: the
+       brand's for the ordinary ones, the danger's for the one that discards. */
+    &:hover,
+    &:focus-visible {
+        background: color-mix(in srgb, var(--brand), var(--surface) 88%);
+        color: var(--brand);
+    }
+    &:active {
+        background: color-mix(in srgb, var(--brand), var(--surface) 80%);
+    }
+    &[data-danger]:hover,
+    &[data-danger]:focus-visible {
+        background: color-mix(in srgb, var(--danger), var(--surface) 88%);
+        color: var(--danger);
+    }
+    &[data-danger]:active {
+        background: color-mix(in srgb, var(--danger), var(--surface) 80%);
+    }
+    &:focus-visible {
+        /* The ring itself is `page.css`'s one; an action only recolors it to its
+           own ink, the danger's when it discards. */
+        outline-color: currentColor;
+    }
+    &:disabled {
+        background: transparent;
+        color: var(--ink-quiet);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    button.icon-button {
+        transition: background-color 0.12s ease, color 0.12s ease;
+    }
+}

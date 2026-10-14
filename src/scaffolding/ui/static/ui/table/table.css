@@ -1,0 +1,136 @@
+/* The table primitive: how every table on the page reads, with or without the element
+   (`table.js`) around it - a table is a `.table-scroll` box holding a `<table>`, and this
+   is its whole look. The grid (`../grid/`) adds only what its features need.
+
+   The raw detail a figure can only summarize: the rows themselves. Ruled where a
+   rule means something - one under the head, one between rows, nothing around the
+   outside - and the money right-aligned in tabular numerals, so the digits stack
+   the way the bars above them do. The box runs past the measure like a figure and
+   `main > .table-scroll` gives it the figure's left edge. */
+.table-scroll {
+    /* The box that scrolls is also the box that contains: a hidden label in a
+       cell is `absolute` (`.visually-hidden`), and this box - not the page - is
+       its containing block, so it keeps its place in the cell instead of sitting
+       far to the right of a phone and dragging the page sideways. */
+    position: relative;
+    /* Four columns of bank words are wider than a phone. The table scrolls in its
+     own box - the same answer `pre` gives a long command line - so the page
+     still never scrolls sideways, and no column has to break mid-word. */
+    overflow-x: auto;
+    & table {
+        width: 100%;
+        /* Separate borders with no spacing, not `collapse`: the collapsing model
+       drops the box's own padding, and zero spacing draws the same hairline
+       without it. */
+        border-spacing: 0;
+    }
+    & th,
+    & td {
+        text-align: left;
+        padding-block: calc(var(--gap) * 0.35);
+    }
+    /* A number typed into a row is as wide as the number, not the page's field. */
+    & input {
+        width: 6ch;
+        padding-block: calc(var(--gap) * 0.15);
+    }
+    /* The gutter goes between columns and nowhere else: the first column starts on
+     the figure's left edge and the last ends on the page's right one. */
+    & th + th,
+    & td + td {
+        padding-inline-start: var(--gap);
+    }
+    & th {
+        font-weight: normal;
+        /* Heavier than a row rule: the head is the table's one reference line, drawn
+       in the same ink as a plot's spine. The eyebrow look (small caps, quiet) is
+       `page.css`'s one rule. */
+        border-block-end: 1px solid var(--ink-quiet);
+    }
+    & tbody tr + tr td {
+        border-block-start: 1px solid var(--line);
+    }
+    /* A date is one fact, not two: the column is as wide as "13 Ago. 2025". */
+    & td:first-child {
+        white-space: nowrap;
+    }
+    /* A note under a name is prose, not a fact: it wraps in a column of its own
+       width instead of stretching the first column past the page. */
+    & .note {
+        display: inline-block;
+        white-space: normal;
+        max-inline-size: 36ch;
+    }
+    /* The last column is the figure's right edge; a table with two numbers says
+       so with `.num`, so the pair aligns the same way instead of one of them
+       hanging left of the other. */
+    & th:last-child,
+    & td:last-child,
+    & .num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+/* The same small motion for the rows. */
+@media (prefers-reduced-motion: no-preference) {
+    .table-scroll tbody tr {
+        transition: background-color 0.12s ease;
+        &:hover {
+            background: color-mix(in srgb, var(--brand), var(--surface) 94%);
+        }
+    }
+}
+
+/* A header that is a link - the server orders the rows - reads as the header's own text. */
+.table-scroll th a {
+    color: inherit;
+    text-decoration: none;
+    &:hover,
+    &:focus-visible {
+        color: var(--brand);
+        text-decoration: underline;
+    }
+}
+
+/* A control and the toggle beside it ("and the 4 like it", beside a dropdown). The cell is the same
+   width whatever the toggle says: the toggle is its box, and its words - the label and the count
+   in it - are read off the box only when it is pointed at or has the cursor, where they float
+   to its left over the row. Until then they are for the screen reader, which always has them. */
+.table-scroll .category {
+    /* The toggle's column is there in every row, with or without a toggle, so the dropdowns line up. */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1.3em;
+    align-items: center;
+    gap: calc(var(--gap) * 0.5);
+    & select {
+        width: 100%;
+    }
+}
+.table-scroll .similar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: var(--text-s);
+    color: var(--ink-quiet);
+    /* The label's hiding is the shared `.visually-hidden` (the markup wraps it);
+       on hover or focus its box floats out to the left of the row as the
+       tooltip. Until then the screen reader has it and the eye does not. */
+    &:hover .visually-hidden,
+    &:focus-within .visually-hidden {
+        right: calc(100% + var(--gap) * 0.4);
+        top: 50%;
+        transform: translateY(-50%);
+        width: auto;
+        height: auto;
+        overflow: visible;
+        clip-path: none;
+        z-index: 5;
+        padding: calc(var(--gap) * 0.2) calc(var(--gap) * 0.6);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        color: var(--ink);
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--ink), transparent 80%);
+    }
+}

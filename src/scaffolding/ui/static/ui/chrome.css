@@ -1,0 +1,259 @@
+/* The header, the nav and the footer, and nothing else.
+
+   Loaded by every surface - our pages, allauth's and the admin's - because all
+   three render these three things. What is deliberately not here is the page
+   layout: the admin brings its own body, typography and form styling, and ours
+   would fight it. That lives in page.css, which only the documents we own load.
+
+   Splitting the two is what fixed the admin rendering the nav as a bulleted
+   list: its `{% block extrastyle %}` pulled tokens and the admin mapping but
+   never this, so `.chrome-nav ul` had no rule and the header no background. */
+
+/* Its own type and its own box model, so the chrome measures the same on
+   every host page: the admin sets `body { font-size: .875rem }`, which
+   narrowed a ch-based measure, and it never loads page.css, whose border-box
+   reset the padding arithmetic silently depended on - measured as the same
+   78ch header rendering 32px wider on admin pages. */
+.chrome-header,
+.chrome-footer {
+    &,
+    * {
+        box-sizing: border-box;
+    }
+    background: var(--surface);
+    font: var(--text)/1.55 var(--font);
+}
+
+/* Reserved even when nothing scrolls: a page with a scrollbar centers 15px
+   narrower than one without, so the nav jumped half a gutter between the
+   home page and any changelist. */
+html {
+    scrollbar-gutter: stable;
+}
+.chrome-header {
+    border-bottom: 1px solid var(--line);
+}
+.chrome-footer {
+    border-top: 1px solid var(--line);
+}
+
+.chrome-header > div,
+.chrome-footer > div {
+    /* As wide as the page and no wider: the nav takes the text's left edge and
+       the way out takes the page's right one, so the button sits in the top right
+       corner over the figures' own right edge instead of stopping at the
+       measure. */
+    margin: 0;
+    padding: var(--gap);
+    display: flex;
+    gap: var(--gap);
+    /* Centred and not on a baseline: the row's second item is a bordered button
+       whose box is taller than the nav's line, and a baseline leaves the nav
+       sitting high in the bar the button sets the height of. */
+    align-items: center;
+    flex-wrap: wrap;
+    padding-block: calc(var(--rhythm) * 1);
+    padding-inline: var(--origin) calc(var(--gap) * 2);
+}
+
+/* On the `li` and not only the `ul`: the admin's own stylesheet reaches every
+   item by element - `li { list-style-type }` gave the nav square bullets, and
+   `li { font-size: .8125rem; line-height: 1.25rem }` shrank it to 13px on
+   admin pages only - and a rule on the parent does not override a rule that
+   names the child. The chrome defends its own type wherever it is worn. */
+.chrome-nav {
+    & ul {
+        display: flex;
+        gap: var(--gap);
+        flex-wrap: wrap;
+        margin: 0;
+        padding: 0;
+    }
+    & li {
+        list-style: none;
+        font-size: inherit;
+        line-height: inherit;
+    }
+    & a {
+        color: var(--brand);
+        text-decoration: none;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.chrome-brand {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* The way out is a form, because logging out is a POST. It should read as a
+   link beside the others rather than as the page's primary action. */
+.chrome-end {
+    margin-left: auto;
+    & form {
+        margin: 0;
+    }
+    & button {
+        font: inherit;
+        padding: calc(var(--gap) * 0.3) calc(var(--gap) * 0.8);
+        border: 0;
+        border-radius: var(--radius);
+        background: var(--surface);
+        color: var(--ink);
+        cursor: pointer;
+    }
+}
+
+/* The header is one bar. The nav's links run its full height, so the current
+   one is a tab of the bar itself: no pill, the bar's own surface with a line
+   along the bar's floor. A text-shadow thickens its strokes without changing
+   advance widths, so the row does not shift as bold did. The way out is the
+   bar's second part - a tinted panel flush with the right edge - and the nav
+   keeps the left origin: the link padding is taken back below. */
+.chrome-header {
+    box-shadow: 0 1px 4px color-mix(in srgb, var(--ink), transparent 94%);
+    & > div {
+        padding-block: 0;
+        padding-inline: var(--origin) 0;
+        gap: 0;
+        flex-wrap: nowrap;
+    }
+}
+.chrome-nav {
+    align-self: stretch;
+    display: flex;
+    flex: 1;
+    & ul {
+        margin-left: calc(var(--gap) * -0.6);
+    }
+    & li {
+        display: flex;
+        padding: 0; /* the admin pads every `li` by 1px 0 */
+    }
+    & a {
+        display: flex;
+        align-items: center;
+        padding: calc(var(--rhythm) * 0.5) calc(var(--gap) * 0.6);
+        &:hover {
+            text-decoration: none;
+            background: color-mix(in srgb, var(--brand), var(--surface) 92%);
+        }
+        &[aria-current="page"] {
+            color: var(--ink);
+            box-shadow: inset 0 -3px 0 var(--brand);
+            text-shadow: 0 0 1px var(--ink-quiet), 0 0 1px var(--line);
+        }
+    }
+}
+.chrome-end {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    padding-inline: var(--gap) calc(var(--gap) * 2);
+    background: var(--bg);
+    border-left: 1px solid var(--line);
+}
+.chrome-skip {
+    position: absolute;
+    left: -100vw;
+    /* Focused, it takes the first link's place: same origin, same height. */
+    &:focus {
+        left: calc(var(--origin) - var(--gap) * 0.6);
+        top: 0;
+        margin: 0; /* the admin's own skip link margins it 5px */
+        padding: calc(var(--rhythm) * 0.5) calc(var(--gap) * 0.6);
+        background: var(--surface);
+        outline-offset: -2px;
+        z-index: 1;
+    }
+}
+main:focus {
+    outline: none;
+}
+
+/* The header stays on screen: the books run to 15,000px and the nav is the way
+   between them. Anchors land below it. */
+.chrome-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+html {
+    scroll-padding-top: calc(var(--rhythm) * 3);
+}
+
+/* The burger. Hidden until `nav.js` says it can work (`.menu-ready`), and only
+   on a narrow screen: wide, the nav is one row and needs no button. The button
+   and the way out share the first row; the nav opens under them as a column. */
+.chrome-burger {
+    display: none;
+    font: inherit;
+    align-items: center;
+    padding: 0 var(--gap);
+    border: 0;
+    border-right: 1px solid var(--line);
+    background: none;
+    color: var(--brand);
+    cursor: pointer;
+    &[aria-expanded="true"] {
+        color: var(--ink);
+        box-shadow: inset 0 -3px 0 var(--brand);
+    }
+}
+@media (max-width: 40rem) {
+    .menu-ready {
+        & .chrome-header > div {
+            flex-wrap: wrap;
+            padding-inline-start: 0;
+        }
+        & .chrome-burger {
+            display: flex;
+            align-self: stretch;
+            min-height: calc(var(--rhythm) * 2);
+        }
+        & .chrome-end {
+            margin-left: auto;
+        }
+        & .chrome-nav {
+            display: none;
+            order: 3;
+            flex-basis: 100%;
+            border-top: 1px solid var(--line);
+            &.open {
+                display: flex;
+            }
+            & ul {
+                flex-direction: column;
+                gap: 0;
+                width: 100%;
+                margin: 0;
+            }
+            & li,
+            & a {
+                width: 100%;
+            }
+            & a {
+                padding-inline: var(--gap);
+                &[aria-current="page"] {
+                    box-shadow: inset 3px 0 0 var(--brand);
+                }
+            }
+        }
+    }
+}
+
+/* Motion is small and earns its place: a colour easing on what answers a
+   pointer. Nothing moves for a reader who asked it not to. */
+@media (prefers-reduced-motion: no-preference) {
+    .chrome-nav a,
+    .chrome-burger,
+    .chrome-end button {
+        transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .chrome-end button:hover {
+        background: color-mix(in srgb, var(--brand), var(--surface) 92%);
+        box-shadow: 0 1px 3px color-mix(in srgb, var(--ink), transparent 85%);
+    }
+}

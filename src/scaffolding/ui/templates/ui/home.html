@@ -1,0 +1,10 @@
+{% extends "ui/base.html" %}
+
+{% block main %}
+  <h1>Scaffolding</h1>
+  {% if tenant %}
+    <p>Tenant: <strong>{{ tenant.name }}</strong>. <a href="{% url 'notes' %}">Notes</a>.</p>
+  {% else %}
+    <p>No tenant yet. Create one in the <a href="{% url 'admin:index' %}">admin</a>.</p>
+  {% endif %}
+{% endblock %}

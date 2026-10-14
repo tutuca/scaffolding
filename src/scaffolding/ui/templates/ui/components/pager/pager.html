@@ -1,0 +1,8 @@
+{# Where the reader is among the pages of a list and the way to the ones beside it. `pager` is a `ui.pager.Pager`; `label` names the landmark for a screen reader; a single page is no pager. The links are ordinary links - they work without a script, and `data-swap` makes them a swap with one. #}
+{% if pager.pages > 1 %}
+  <nav aria-label="{{ label }}" class="cluster">
+    {% if pager.previous %}<a href="{{ pager.previous }}" data-swap rel="prev">Anterior</a>{% endif %}
+    <span>Página {{ pager.page }} de {{ pager.pages }}</span>
+    {% if pager.next %}<a href="{{ pager.next }}" data-swap rel="next">Siguiente</a>{% endif %}
+  </nav>
+{% endif %}

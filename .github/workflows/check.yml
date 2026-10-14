@@ -1,0 +1,53 @@
+# Every pull request runs the full gate as one job per check, so the PR's checks
+# list shows each check on its own - its own output, its own pass/fail - instead
+# of one `make check` blob. The eight jobs mirror `make check`'s targets. The
+# release job (`release.yml`) runs only on v* tags; this is the PR gate. The gate
+# stays network-free, so the jobs touch PyPI only while `make sync` resolves the
+# dev extra (`pytest`, `ruff`, `mypy` live in it).
+name: Check
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  check:
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: Format Python
+            target: format
+          - name: Lint Python
+            target: lint
+          - name: Format JS
+            target: format-js
+          - name: Lint JS
+            target: lint-js
+          - name: Typecheck
+            target: typecheck
+          - name: Migrations
+            target: migrations
+          - name: Test JS
+            target: test-js
+          - name: Test Python
+            target: test
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - name: Sync the dev env (pytest, ruff, mypy live in the dev extra)
+        run: make sync
+      - name: Run ${{ matrix.name }}
+        run: make ${{ matrix.target }}

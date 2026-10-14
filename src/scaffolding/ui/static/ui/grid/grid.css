@@ -1,0 +1,120 @@
+/* The grid (`grid.js` and its features): what they write into the table primitive.
+   The attributes here are the ones the modules set - `[data-handle]` (a row's drag
+   handle, drawn by the server and shown by `reorder`), `[data-dragging]` (the row being
+   moved), `[data-stale]` and `[data-derived]` (what only the server can compute, and
+   whether it is for the order on screen), `[aria-sort]` (the column the rows are ordered
+   by). */
+data-grid {
+    display: block;
+    & > form {
+        margin-block-start: calc(var(--gap) * 0.5);
+    }
+    /* What only the server can compute is dimmed while it is not the answer for the order
+       on screen - from a move until the what-if comes back: still readable, plainly
+       not the number yet. */
+    &[data-stale] [data-derived] {
+        opacity: 0.4;
+    }
+    /* A drag, as Draggable draws one: the row that is held stays in the list, quiet, as the
+       place it will land, and a copy of it - the mirror - follows the pointer. */
+    &[data-sorting] {
+        cursor: grabbing;
+        user-select: none;
+    }
+    & tr[data-dragging] > td {
+        opacity: 0.35;
+        background: color-mix(in srgb, var(--brand), var(--surface) 90%);
+    }
+    /* A header that sorts is a button that reads as its own text: the grid owns
+       its whole look here, not the page's control styles - no padding, border or
+       fill, only the header's own words (and the arrow `aria-sort` adds). */
+    & .table-scroll th button {
+        font: inherit;
+        padding: 0;
+        border: 0;
+        background: none;
+        text-transform: inherit;
+        letter-spacing: inherit;
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    & th[aria-sort="ascending"] :is(button, a)::after {
+        content: " ↑";
+    }
+    & th[aria-sort="descending"] :is(button, a)::after {
+        content: " ↓";
+    }
+    & th[aria-sort] {
+        color: var(--ink);
+    }
+    & button[data-handle] {
+        touch-action: none;
+        cursor: grab;
+        &[aria-pressed="true"] {
+            color: var(--brand);
+            background: color-mix(in srgb, var(--brand), var(--surface) 88%);
+        }
+        &:disabled {
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    data-grid [data-derived] {
+        transition: opacity 0.15s ease;
+    }
+}
+
+/* The table's actions: what can be done to the table as a whole, in one row above it -
+   adding a row, and the actions on an order that has not been saved. */
+.table-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--gap);
+    margin-block-end: calc(var(--gap) * 0.5);
+    & > form {
+        margin-inline-start: auto;
+    }
+}
+
+/* An actions column: the icons of what can be done to a row, together at its right edge. */
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: calc(var(--gap) * 0.2);
+    white-space: nowrap;
+}
+
+/* The mirror: a copy of the held row, laid over the page at its own width, raised, never
+   a target of the pointer. The table's own rules dress it - it sits in the scroll box. */
+.grid-mirror {
+    position: fixed;
+    z-index: 20;
+    margin: 0;
+    pointer-events: none;
+    border-spacing: 0;
+    table-layout: fixed;
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--ink), transparent 72%);
+    outline: 1px solid color-mix(in srgb, var(--brand), transparent 55%);
+    & td {
+        padding-block: calc(var(--gap) * 0.35);
+    }
+}
+
+/* On a screen narrower than the table the actions column stays at the box's right edge while
+   the rest scrolls under it: a row's verbs, and the handle it is moved by, are always
+   within reach. The background is opaque so what scrolls past is not seen through it. */
+.table-scroll th[data-key="acciones"],
+.table-scroll td:has(> .actions) {
+    position: sticky;
+    right: 0;
+    background: var(--bg);
+}

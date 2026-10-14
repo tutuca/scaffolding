@@ -1,29 +1,28 @@
-
-__pycache__
-.*_cache
-.*_history
-.coverage
+# State and secrets - never committed.
+var/
+etc/secrets/
 .env
-.python-version
-.venv
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
 .venv/
-.vscode/
-*_cache/
-*.mo
-*.sqlite3
-*.zip
-artifacts/
-build/
-compose.override.yml
-compose.override.yml.bak
-data/
 dist/
-etc/
-media/
+build/
+.coverage
+.reports/
+
+# JS / node
 node_modules/
-src/scaffolding.egg-info/
-src/scaffolding/media
-src/scaffolding/static
-static/
-*_cache/
-package-lock.json
+
+# Local editor/runtime
+.DS_Store
+.zed/
+.delta/
+
+# uv's repo-local cache
+tmp/

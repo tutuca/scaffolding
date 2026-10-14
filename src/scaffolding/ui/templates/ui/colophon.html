@@ -1,0 +1,50 @@
+{% extends "ui/base.html" %}
+
+{% block title %}Colofón — scaffolding{% endblock %}
+
+{% block main %}
+  <h1 id="colofon">Colofón</h1>
+  <p class="quiet">Las fuentes y los nombres que usan los cuadernos, reunidos en un solo lugar.</p>
+
+  <h2 id="fuentes">Fuentes</h2>
+  <p>Los datos publicados, las referencias de planificación y los supuestos del modelo
+    cumplen funciones distintas. Una fuente permite revisar el dato; no valida por sí sola
+    una proyección hecha con él.</p>
+  <ul>
+    <li><strong>50/30/20</strong> y las demás razones — Warren &amp; Tyagi,
+      <em>All Your Worth: The Ultimate Lifetime Money Plan</em> (2006); de dónde sale cada
+      una, en <code>docs/BUDGET.md</code>.</li>
+    <li><strong>Las dos reglas de Tufte</strong> — borrar la tinta que no es dato, y
+      <em>comparado con qué</em> (un número solo no dice nada). Suyos también los
+      sparklines. Edward Tufte, <em>The Visual Display of Quantitative Information</em>.</li>
+    <li><strong>El techo del 36%</strong> de servicio de deuda sobre el ingreso — la razón
+      de referencia para planificar, no un criterio universal de aprobación bancaria;
+      <code>docs/BUDGET.md</code>.</li>
+    <li><strong>La regularización</strong> imputa cada factura del backlog en su propio
+      período (el devengado), no en el día en que se emite —
+      <code>var/documents/sources/backreporting-devengado.md</code>.</li>
+  </ul>
+
+  <h2 id="inflacion">Inflación</h2>
+  <ul>
+    <li><strong>Pasado, medido:</strong> IPC de INDEC — nivel general, apertura por
+      divisiones y núcleo · regulados · estacionales — desde
+      <a href="https://www.datos.gob.ar/">datos.gob.ar</a> con
+      <code>scaffolding inflation fetch</code>. Lo real se deflacta contra los últimos doce
+      meses (Fisher); <em>tu canasta</em> repondera las divisiones por tu propio gasto.</li>
+    <li><strong>Futuro, supuestos propios:</strong> dólar, regulados y salarios suman una
+      banda de sensibilidad. No es un intervalo de confianza ni una banda oficial del
+      <a href="https://www.bcra.gob.ar/todos-relevamiento-de-expectativas-de-mercado-rem/">REM</a>:
+      ese relevamiento reúne expectativas de participantes, no pronósticos del BCRA.
+      No hay una edición y una calibración registradas que respalden la descomposición usada aquí.</li>
+  </ul>
+
+  <h2 id="nombres">Nombres</h2>
+  <ul>
+    <li><code>sin decidir</code> — nadie lo miró.</li>
+    <li><code>sin-agrupar</code> — tiene nombre y le falta grupo.</li>
+    <li><code>bucket</code> — <code>necesito</code> · <code>quiero</code> ·
+      <code>ahorro</code> · <code>ingreso</code> · <code>sin decidir</code>.</li>
+  </ul>
+
+{% endblock %}

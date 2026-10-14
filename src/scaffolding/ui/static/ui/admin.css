@@ -1,0 +1,133 @@
+/* Django's custom properties, set from ours. Nothing here invents a colour; if
+   a value is wanted, it belongs in tokens.css. Loaded through
+   `{% block extrastyle %}`, which comes after the admin's own stylesheet, so
+   these win without `!important`.
+
+   Only the names that carry the palette. The ones left alone are left alone on
+   purpose: `--darkened-bg` drives `tr.alt` and `#content-related`, so setting it
+   to our surface white flattened the row striping and the filter sidebar into
+   nothing, and `--selected-row` does the same for the row you just clicked.
+   Django's defaults for those are already derived from a light ground. */
+:root {
+    --primary: var(--brand);
+    --secondary: var(--brand);
+    --accent: var(--brand);
+    --primary-fg: var(--brand-ink);
+
+    --body-fg: var(--ink);
+    --body-bg: var(--bg);
+    --body-quiet-color: var(--ink-quiet);
+    --body-medium-color: var(--ink-quiet);
+    --body-loud-color: var(--ink);
+
+    --header-color: var(--ink);
+    --header-branding-color: var(--ink);
+    --header-bg: var(--surface);
+    --header-link-color: var(--brand);
+
+    --breadcrumbs-fg: var(--ink-quiet);
+    --breadcrumbs-link-fg: var(--brand);
+    --breadcrumbs-bg: var(--surface);
+
+    --link-fg: var(--brand);
+    --link-hover-color: var(--brand);
+    --link-selected-fg: var(--brand);
+
+    --hairline-color: var(--line);
+    --border-color: var(--line);
+
+    --error-fg: var(--danger);
+    --delete-button-bg: var(--danger);
+    --delete-button-hover-bg: var(--danger);
+
+    --object-tools-bg: var(--brand);
+    --object-tools-fg: var(--brand-ink);
+    --object-tools-hover-bg: var(--brand);
+
+    --button-bg: var(--brand);
+    --button-fg: var(--brand-ink);
+    --button-hover-bg: var(--brand);
+    --default-button-bg: var(--brand);
+    --default-button-hover-bg: var(--brand);
+
+    --font-family-primary: var(--font);
+    --font-family-monospace: var(--mono);
+}
+
+/* No rule for the admin's own header: `{% block header %}` replaces it with
+   ours, so `.chrome-header` in chrome.css dresses it like every other page.
+
+   No width rule either. A changelist is a table and `--measure` is a column for
+   prose, so constraining `#content` to it crushed every list into about six
+   hundred pixels. The admin keeps the width Django gives it. */
+
+/* Django underlines every link outside a list of its own, and the heaviest
+   entry (`#content-main.app-list a`) weighs 1,1,2. The nav is on no such list,
+   so it says no with two ids, 2,1,1: the current page is marked by the bar,
+   not an underline. */
+.chrome-nav a:not(#nav):not(#nav) {
+    text-decoration: none;
+}
+
+/* The same reading typography as every other page: the admin sets its body at
+   .875rem and its h1 at 1.25rem weight 300, which read as a second product
+   next to the home page. Sizes come from the scale, weight from page.css's
+   default-bold h1. Dense component internals (tables, filters) keep the
+   admin's own relative sizes, and links keep the admin's no-underline - a
+   data grid of underlined links is noise, not consistency. */
+body {
+    font-size: var(--text);
+    line-height: 1.55;
+}
+p {
+    line-height: inherit;
+}
+h1 {
+    font-size: var(--text-xl);
+    font-weight: 700;
+}
+
+/* Breadcrumbs went `<div>` → `<ol>` in Django 6.1. Clear the list markers, and
+   put the trail on our scale - `--text-s` for the type, `--gap` for the
+   padding - instead of Django's fixed 10px/40px and 0.875rem. */
+ol.breadcrumbs {
+    list-style: none;
+    padding: var(--gap) calc(var(--gap) * 1.4);
+    & li {
+        font-size: var(--text-s);
+    }
+}
+
+/* Django's base.css ships `#content { padding: 20px 40px }`. The 40px on the
+   sidebar side is the chasm between the nav and the page; bring it onto the
+   `--gap` rhythm and drop the fixed px. */
+#content {
+    padding: var(--gap) calc(var(--gap) * 1.4);
+}
+
+/* The chrome centers to `--measure` here exactly as on every other page.
+   One-chrome spanned it full-bleed instead ("a nav floating in a 78ch box
+   above a full-width changelist reads as a different page") - reversed
+   2026-09-19 at the owner's request, looking at the two pages side by side:
+   a nav that changes width between pages reads as two products, which is
+   worse. The vendored `admin/base.html` supplies `.chrome-footer` itself, so
+   the old `#footer` id mappings went with the reversal. */
+.toggle-nav-sidebar {
+    margin: calc(var(--gap) * 0.3) 0;
+}
+
+#nav-sidebar {
+    border-radius: var(--radius) var(--radius) 0 0;
+    border-top: 1px solid var(--hairline-color);
+}
+
+#nav-filter {
+    width: 100%;
+    border-radius: var(--radius) var(--radius) 0 0;
+    box-sizing: border-box;
+    padding: calc(var(--gap) * 0.3);
+    margin: 0;
+    border: 1px solid var(--border-color);
+    background-color: var(--darkened-bg);
+    color: var(--body-fg);
+}

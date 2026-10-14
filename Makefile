@@ -1,127 +1,135 @@
-ENV ?= development
-app := app
-dump ?=
-args ?=
-compose = docker compose
-run = $(compose) run --rm $(app)
-manage = scaffolding
-npm = $(run) npm
-pip = uv pip
-# pip = pip
+.PHONY: configure sync run static migrate migrations superuser test test-js lint-js format-js lint format typecheck openapi package dist publish deploy-check release check labels sandbox sandbox-reset sandbox-shell
 
-VERSION = 0.1.8
-IMG_NAME = registry.gitlab.com/bigpear.adm/scaffolding
+# Declarations: every variable lives here, before any target. `?=` - a value
+# the caller exported wins.
 
+# uv's cache, repo-local: the agent sandbox denies the home cache, and a
+# repo-local one keeps `package`/`dist` repeatable offline.
+export UV_CACHE_DIR ?= $(CURDIR)/tmp/uv-cache
 
-# Compose related commands
-start:
-	$(compose) up $(args)
+# Reproducible wheels: file timestamps are the build commit's date, so the same
+# source builds the same wheel.
+SOURCE_DATE_EPOCH ?= $(shell git log -1 --format=%ct)
 
-stop:
-	$(compose) stop
+# The named volume `sandbox` keeps its state in; the default `sandbox-shell`
+# command.
+SANDBOX_VOLUME ?= scaffolding-sandbox
+C ?= sh
+
+# The tag `publish` uploads to; defaults to the tag HEAD sits on.
+TAG ?= $(shell git describe --tags --exact-match 2>/dev/null)
+
+RUN = uv run scaffolding
+
+# The application: Django's own dev server, autoreload and all.
+run:
+	$(RUN) runserver
 
 configure:
-	mkdir -p static media data data/backups
-	cp etc/.env.skel .env
-	cp etc/compose.override.yml.skel compose.override.yml
-	cp etc/nginx/nginx.conf.skel etc/nginx/nginx.conf
+	mkdir -p var/scratchpad etc/secrets tmp
 
-logs:
-	$(compose) logs -f $(app)
+sync:
+	uv sync --extra dev
 
-build:
-	$(compose) build $(args)
-
-build_docker:
-	$(compose) build $(args)
-
-build_wheel:
-	python -m build
-
-build: build_wheel build_docker
-
-docs:
-	python -m mkdocs build
-
-install_backend:
-	$(pip) install -e .[dev]
-
-install_frontend:
-	nodeenv -pn lts
-	npm install
-
-install: install_backend install_frontend
-
-tag:
-	docker tag "$(IMG_NAME)" "$(IMG_NAME):$(VERSION)"
-
-bundle:
-	$(npm) --prefix=/root/src run build
-	$(manage) collectstatic --noinput
-
-upload_docker:
-	docker push "$(IMG_NAME)"
-	docker push "$(IMG_NAME):$(VERSION)"
-
-upload_wheel:
-	TWINE_PASSWORD=${CI_REGISTRY_PASSWORD} TWINE_USERNAME=${CI_REGISTRY_USER} python -m twine upload --repository-url https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
-
-upload: bundle upload_docker upload_wheel
-
-
-clean:
-	$(run) rm -rf dist/* static/*
-	$(compose) down
-	$(compose) rm --force -v
-	rm -rf artifacts
-
-# Container shell
-shell:
-	$(run) /bin/bash
-
-dbshell:
-	$(run:app=db) /bin/bash
-
-restart :
-	$(compose) restart $(app)
-
-migrations:
-	$(manage) makemigrations
+static:
+	$(RUN) collectstatic --noinput
 
 migrate:
-	$(manage) migrate
+	$(RUN) migrate
+	$(RUN) migrate --database tasks django_tasks_database
 
-reset_db:
-	$(manage) reset_db --noinput -c
+# A model changed without a migration is a green suite and a broken clone.
+migrations:
+	mkdir -p var
+	$(RUN) makemigrations --check --dry-run
 
-reset: reset_db migrate
-	$(manage) createsuperuser
+superuser:
+	$(RUN) createsuperuser
 
+test:
+	uv run pytest
 
-update: backup
-	$(compose) stop
-	$(compose) pull
-	$(compose) up -d
-	$(manage) migrate --no-input
+# The frontend's functional core: node's built-in runner, no dependencies and no
+# build. Coverage is V8's own and gated at 100% on what the tests import (core/).
+test-js:
+	node --test --experimental-test-coverage --test-coverage-exclude="tests/js/**" --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 "tests/js/**/*.test.js"
 
-backup:
-	$(run:app=db) /root/bin/backup.sh
+# The frontend's lint/format: one stdlib-only script (bin/js.mjs).
+lint-js:
+	node bin/js.mjs lint
+
+format-js:
+	node bin/js.mjs format
 
 lint:
-	ruff check src tests
-	flake8 src tests
-	mypy src tests --explicit-package-bases
+	uv run ruff check src tests bin
 
-restore:
-	$(compose) stop app
-	$(run:app=db) /root/bin/restore.sh $(dump)
-	$(compose) restart app
+format:
+	uv run ruff format src tests bin && uv run ruff check --fix src tests bin
 
-list_backups:
-	$(run:app=db) /root/bin/list_backups.sh
+typecheck:
+	uv run mypy src tests bin
 
-bootstrap: migrate
-	$(manage) createsuperuser
-	$(manage) collectstatic --noinput
+openapi:
+	$(RUN) spectacular --file var/openapi/schema.yaml --validate --fail-on-warn
 
-.PHONY: start stop build docs configure install upload clean shell migrations migrate restore backup shell_plus bootstrap
+# The wheel, built from committed source: `git archive HEAD`, never the working
+# tree, so an untracked file cannot leak into what gets installed.
+package:
+	rm -rf tmp/dist/build dist
+	mkdir -p tmp/dist/build dist
+	git archive HEAD | tar -x -C tmp/dist/build
+	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) uv build --wheel --out-dir dist tmp/dist/build
+
+# The artifact proven: the packaging tests build and pin the wheel, then
+# bin/wheel_smoke.py installs it into a throwaway venv and boots the server.
+dist: package
+	uv run --no-project --with pytest pytest tests/scaffolding/packaging -q
+	uv run --no-project python bin/wheel_smoke.py
+
+# Publish the wheel in dist/ to the tag's GitHub release - CI's step.
+publish: dist
+	test -n "$(TAG)" || (echo "usage: make publish TAG=vX.Y.Z" && exit 1)
+	gh release view "$(TAG)" >/dev/null 2>&1 || gh release create "$(TAG)" --title "$(TAG)" --generate-notes
+	gh release upload "$(TAG)" dist/*.whl --clobber
+
+# The sandbox (sandbox/Dockerfile): the wheel in `dist/` on a bare Debian, its
+# state in a named volume.
+sandbox/requirements.txt: uv.lock
+	uv export --no-hashes --locked --no-default-groups --no-emit-project -o $@
+
+sandbox: sandbox/requirements.txt
+	docker build -q -f sandbox/Dockerfile -t scaffolding-sandbox .
+	docker run --rm -p 127.0.0.1:8000:8000 -v $(SANDBOX_VOLUME):/state scaffolding-sandbox \
+		sh -c 'scaffolding migrate && scaffolding migrate --database tasks django_tasks_database && exec scaffolding runserver 0.0.0.0:8000 --noreload'
+
+sandbox-shell:
+	docker run --rm -it -v $(SANDBOX_VOLUME):/state scaffolding-sandbox sh -c '$(C)'
+
+sandbox-reset:
+	docker volume rm -f $(SANDBOX_VOLUME)
+
+# The deployed machine's checklist: Django's own `check --deploy`.
+deploy-check:
+	$(RUN) check --deploy
+
+# Cut a release: gate first (the full check), then bump VERSION and commit it,
+# build the proven wheel, and tag. The pushed tag wakes CI.
+release:
+	test -n "$(VERSION)" || (echo "usage: make release VERSION=x.y.z" && exit 1)
+	$(MAKE) check
+	printf '%s\n' '$(VERSION)' > VERSION
+	git add VERSION
+	git diff --cached --quiet -- VERSION || git commit -m "Bump version to $(VERSION)"
+	$(MAKE) dist
+	git tag "v$(VERSION)"
+
+check: format lint format-js lint-js typecheck migrations test-js test
+
+# The five status labels (docs/WORKFLOW.md). Idempotent.
+labels:
+	gh label create todo --description "Queued" --color 1d76db || gh label edit todo --description "Queued" --color 1d76db
+	gh label create doing --description "Active" --color fbca04 || gh label edit doing --description "Active" --color fbca04
+	gh label create done --description "Shipped" --color 0e8a16 || gh label edit done --description "Shipped" --color 0e8a16
+	gh label create reviewing --description "PR open, needs eyes" --color 6f42c1 || gh label edit reviewing --description "PR open, needs eyes" --color 6f42c1
+	gh label create closed --description "Tabled or won't-do" --color cccccc || gh label edit closed --description "Tabled or won't-do" --color cccccc

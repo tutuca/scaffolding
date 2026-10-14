@@ -1,0 +1,34 @@
+# The wheel is the distribution channel (docs/INFRASTRUCTURE.md). `make release`
+# gates, bumps, commits and tags locally; a pushed v* tag wakes this job, whose
+# only command is `make publish`: prove the wheel from that commit (`make dist`,
+# packaging tests + boot smoke) and attach it to the tag's GitHub release.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - name: Prove and publish the wheel to the tag's release
+        run: make publish
+        env:
+          TAG: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}

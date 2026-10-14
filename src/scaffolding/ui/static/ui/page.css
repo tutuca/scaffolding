@@ -1,0 +1,208 @@
+/* The documents we own: the home page, the notebooks page, and allauth's.
+
+   Not the admin. It brings its own body, typography, tables and form widgets,
+   and this would fight all four - the admin gets `admin.css` instead, which
+   only maps colours onto the variables it already reads.
+
+   This file is the page itself: the reset, the composition primitives (stack,
+   cluster, center, breakout) and the gateway; tables are `table/table.css`. A widget's own
+   styles live beside its module - `telescope.css` with `telescope.js`, and
+   `charts/charts.css` with `charts/` - so the JS that writes a class and the
+   CSS that dresses it sit in one unit (see `docs/DESIGN.md`, "Frontend units").
+
+   Six declarations make the sticky footer. No framework, no grid library, no
+   reset beyond box-sizing plus four rules from Comeau's public-domain one -
+   taken by copy, as its author intends. The rest of his is either the admin's
+   problem or already the browser default this decade. */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+img,
+svg,
+video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+input,
+button,
+textarea,
+select {
+    font: inherit;
+}
+/* `hidden` means hidden, whatever display a later rule gives the element. */
+[hidden] {
+    display: none !important;
+}
+h1,
+h2,
+h3,
+h4 {
+    text-wrap: balance;
+}
+p {
+    text-wrap: pretty;
+}
+
+body {
+    margin: 0;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--ink);
+    font: var(--text)/1.55 var(--font);
+}
+
+/* `swap.js` marks the page while a request is out. */
+main[aria-busy="true"] {
+    cursor: progress;
+}
+
+main {
+    flex: 1;
+    width: 100%;
+    display: grid;
+    /* One column, anchored at `--origin` instead of centered: a figure, a chart
+     and a line of prose all begin on the same x, so the eye keeps one left edge
+     down the page and across the pages. A narrow thing stops at the measure; a
+     figure runs to the right edge. */
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: calc(var(--rhythm) * 2);
+    padding-inline: var(--origin) calc(var(--gap) * 2);
+
+    /* The stack (Every Layout): rhythm as one rule between siblings instead of
+     margins bespoke per element - which means the siblings first surrender
+     their browser defaults. A section break is the one named exception. */
+    & > * {
+        max-width: calc(var(--measure) - var(--gap) * 2);
+        margin-block: 0;
+    }
+    & > * + * {
+        margin-block-start: var(--rhythm);
+    }
+    & > h2 {
+        margin-block-start: calc(var(--rhythm) * 2);
+    }
+    /* A figure is not prose, so it opts out of the reading measure and steps its
+     whole label column to the left of the text: what lands on the text's own left
+     edge is the *plot*, and the labels read in the margin the page's indent
+     leaves them. `charts/mount.js` and `telescope.js` measure that column and hand it
+     over as `--chart-outdent` - zero on a page without the room for it, where the
+     labels go back inside the figure - so the step and the gutter reserved inside
+     the SVG cannot drift. A table has no row labels to house: it keeps the text's
+     edge and only reads past the measure. */
+    & > .chart {
+        max-width: none;
+        margin-inline-start: calc(-1 * var(--chart-outdent, 0px));
+    }
+    & > .table-scroll,
+    & > data-table,
+    & > data-grid {
+        max-width: none;
+    }
+    /* A figure is as wide as the page unless it says `narrow`. A figure with a run
+     to show - months, a tail, panels side by side - is wider for the width; a
+     small one is not, because stretched across a desk its handful of bars sit a
+     hand apart and the reader measures length where the figure only meant to show
+     which is bigger. A narrow figure gets the text column and twenty characters
+     more: enough that a row label and its bar are not crowded, not enough to make
+     the bar itself the width of the page. */
+    & > .chart.narrow {
+        max-width: calc(var(--measure) + 20ch);
+    }
+
+}
+
+a {
+    color: var(--brand);
+}
+/* The one focus ring, declared once. `action.css` recolors it for the danger
+   variant; nothing else may grow a second one. `[role="button"]` covers the
+   telescope's drillable bars, which are SVG rects rather than elements. */
+main :where(a, button, input, select, textarea, [role="button"]):focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+}
+
+h1 {
+    font-size: var(--text-xl);
+}
+/* The eyebrow: a small, quiet label over a bigger thing. One rule, six
+   consumers - repetition is the tokens (DESIGN, CRAP). */
+:where(h2, .indicators dt, .sync dt, .table-scroll th, .chart-column-title, .telescope-column-title) {
+    font-size: var(--text-s);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-quiet);
+}
+.quiet {
+    color: var(--ink-quiet);
+}
+
+/* The cluster (Every Layout): things of one kind side by side, wrapping on
+   the gap instead of separator glyphs. The nav row in chrome.css is the same
+   shape with its own name. */
+.cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--gap) * 0.3) var(--gap);
+    list-style: none;
+    padding: 0;
+}
+code,
+pre {
+    font-family: var(--mono);
+}
+code {
+    overflow-wrap: anywhere;
+}
+/* A long command line scrolls in its own box; the page never scrolls sideways. */
+pre {
+    overflow-x: auto;
+}
+
+/* The gateway: one heading, one action. allauth renders its provider list as
+   a bare ul the layout cannot reach into, so the door is dressed from here -
+   the list drops its bullets and the one link in it reads as the page's
+   primary button. The class is on the layout's body; see
+   `AdminLoginView`'s docstring for why this page is the only door. */
+.gateway-page main > ul {
+    list-style: none;
+    padding: 0;
+    & a {
+        display: inline-block;
+        padding: calc(var(--gap) * 0.55) calc(var(--gap) * 1.4);
+        border: 1px solid var(--brand);
+        border-radius: var(--radius);
+        background: var(--brand);
+        color: var(--brand-ink);
+        text-decoration: none;
+    }
+}
+
+/* The health indicators: a few numbers, each with its reference beside it -
+   the books' "comparado con qué" rule shrunk to a row. Definition list
+   because that is what it is; tabular numerals so the values align when they
+   change. */
+.indicators,
+.sync {
+    display: grid;
+    gap: var(--gap);
+    grid-template-columns: repeat(auto-fit, minmax(18ch, 1fr));
+    & div {
+        border-left: 2px solid var(--line);
+        padding-left: var(--gap);
+    }
+    & dd {
+        margin: 0;
+        font-variant-numeric: tabular-nums;
+    }
+    & dd:not(.quiet) {
+        font-weight: 600;
+    }
+}
+
+

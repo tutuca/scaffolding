@@ -1,0 +1,17 @@
+<button class="chrome-burger" type="button" aria-expanded="false" aria-controls="chrome-menu">Menu</button>
+<nav class="chrome-nav" id="chrome-menu" aria-label="Principal">
+  <ul>
+    <li><a class="chrome-brand" href="/"{% if request.path == "/" %} aria-current="page"{% endif %}>Home</a></li>
+    {% if user.active_tenant %}
+      {% url 'notes' as u %}<li><a href="{{ u }}"{% if u in request.path %} aria-current="page"{% endif %}>Notes</a></li>
+      <li><a href="/admin/"{% if "/admin/" in request.path %} aria-current="page"{% endif %}>Admin</a></li>
+    {% endif %}
+  </ul>
+</nav>
+<div class="chrome-end">
+  {% if user.is_authenticated %}
+    <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sign out</button></form>
+  {% else %}
+    <a href="{% url 'login' %}">Sign in</a>
+  {% endif %}
+</div>

@@ -1,0 +1,25 @@
+{% extends "ui/base.html" %}
+
+{% block main %}
+  <h1>Notes</h1>
+  {% if tenant %}
+    <form method="post">
+      {% csrf_token %}
+      <input name="title" placeholder="Title" required>
+      <textarea name="body" placeholder="Body"></textarea>
+      <button type="submit">Add note</button>
+    </form>
+    <ul>
+      {% for note in notes %}
+        <li>
+          <strong>{{ note.title }}</strong> · {{ note.updated_on|date:"Y-m-d" }}
+          {% if note.body %}<br><span class="quiet">{{ note.body }}</span>{% endif %}
+        </li>
+      {% empty %}
+        <li>No notes yet.</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No tenant yet.</p>
+  {% endif %}
+{% endblock %}

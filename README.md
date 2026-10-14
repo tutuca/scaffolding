@@ -1,103 +1,85 @@
 # scaffolding
 
+A multi-tenant Django application scaffold: the conventions and infrastructure of
+[`tutuca/invoices`](https://github.com/tutuca/invoices) with the invoice-specific
+domains removed and a small sample domain (`Note`) in their place.
 
-## Organización del repositorio
+One machine, SQLite, plain Django authentication, and a layered architecture —
+`conf` / `data` / `service` / `interface` / `ui` — described in
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-```
-.
-├── README.md               -> Archivo de documentación para programadores.
-├── LICENSE                 -> Noticia de licencia.
-├── CHANGELOG               -> Registro de cambios.
-├── Makefile                -> Utildades para el uso del componente.
-├── compose.yml             -> Infraestructura como código usando docker-compose.
-├── .gitlab-ci.yml          -> Instrucciones de construcción y despliegue.
-├── pyproject.toml          -> Toolchain Python.
-├── package.json            -> Toolchain Javascript.
-├── docs/                   -> Documentación del componente.
-├── bin/                    -> Utilidades auxiliares.
-└── src/                    -> Código fuente del componente.
-│   ├── Dockerfile          -> Utilidades auxiliares.
-│   ├── common/             -> Clases base y utilidades genéricas.
-│   ├── public/             -> Assets estáticos.
-│   ├── samples/            -> Django App `Samples`.
-│   ├── scaffolding/        -> Django project.
-│   │   └── manage.py       -> Punto de entrada de la aplicación web.
-│   ├── users/              -> Django App `Users`.
-│   └── ui/                 -> Proyecto Vue para la interfaz gráfica.
-│       ├── scss            -> Estilos usando Sass.
-│       └── main.js         -> Punto de entrada para compilación.
-├── VERSION                 -> Información de versión.
-└── vite.config.js
-```
+## What it demonstrates
 
-## Instrucciones de instalación
+The sample domain is a single `Note` (title + body) that flows through every layer
+unchanged, so each layer is a template to copy:
 
-Requisitos:
+- **CLI** — `scaffolding notes list` / `scaffolding notes add` (`interface/cli/`).
+- **HTTP** — the versioned API under `/api/v1.0/` (`interface/api/`, `service/views.py`),
+  Swagger at `/api/schema/swagger-ui/`.
+- **Admin** — `/admin/` (`data/admin/`), role-scoped per tenant.
+- **Web** — `/` and `/notes/` (`interface/web/`).
 
-- Ubuntu 24.04+
-- docker, docker-compose
-- git
-- make
-- python 3.12+
+All four call the same use cases in `service/domain/notes/`, so it makes no
+difference which you reach for.
 
-Clonar el respositorio:
+## Quick start
 
-```
-$ git clone git@gitlab.com:bigpear.adm/scaffolding.git
+```bash
+uv sync --extra dev
+make configure               # create var/ and etc/ trees
+cp .env.example .env         # set SECRET_KEY (and DEBUG for local work)
+scaffolding migrate
+scaffolding migrate --database tasks django_tasks_database
+scaffolding createsuperuser
+scaffolding runserver
 ```
 
+Log in at `/login/` with the superuser's email and password, create a `Tenant` in
+the admin, add yourself as a member, and set it as your active tenant. Then `/notes/`
+works end to end.
+
+`make check` runs ruff, mypy, the frontend's lint/test, and pytest with coverage.
+
+## Documentation
+
+| Read | For |
+|------|-----|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Where logic lives, and why. Binding. |
+| [`docs/developer/`](docs/developer/index.md) | Developer guide: setup, usage, deployment, maintenance. |
+| [`docs/admin/`](docs/admin/index.md) | Admin guide: setup, usage, deployment, maintenance. |
+| [`docs/user/`](docs/user/index.md) | User guide: setup and usage. |
+| [`docs/TESTING.md`](docs/TESTING.md) | Test conventions. |
+| [`docs/WORKFLOW.md`](docs/WORKFLOW.md) | Trunk-based workflow. |
+| [`docs/INFRASTRUCTURE.md`](docs/INFRASTRUCTURE.md) | Serving, the wheel, the sandbox. |
+
+## Layout
+
 ```
-python -m venv .venv
-
-source .venv/bin/activate
-
-make configure
+src/scaffolding/
+  conf/                     settings (django-environ), urls (versioned api/v{X.Y}/)
+  data/                     the one Django app
+    models/<entity>.py      one model per file; every write is a mutator here
+    serializers/ admin/     one file per entity
+    management/commands/    seeding is data-layer work
+  service/
+    base.py                 the CRUD viewset factory
+    views.py                VIEWS registry -> the API router
+    commands.py             COMMANDS registry -> what the CLI exposes
+    domain/notes/           schemas · use_cases (the sample domain)
+  interface/
+    api/                    router, versioned urls
+    cli/                    management commands
+    adapter/                ports (Protocols) and adapters
+    tasks/                  django.tasks thin shells
+    web/                    server-rendered pages
+  ui/                       templates + static (tokens, components, grid, table)
+var/                        gitignored: the database and runtime state
+tests/                      mirrors src; recipes/ per model
 ```
 
-```
-make install
-```
+## Tenancy
 
-## Uso
-
-
-Para iniciar el servidor de backend, primero asegurarse de tener aplicadas todas las migraciones y crear un superusuario
-```sh
-$ scaffolding migrate
-
-$ scaffolding createsuperuser
-```
-
-Luego podemos iniciar el servidor
-
-```sh
-$ scaffolding runserver
-```
-
-En otro terminal podemos compilar los assets de frontend:
-
-Asegurarse de contar con una instalación de node, y descargar las dependencias:
-
-```sh
-$ nodeenv -pn lts
-$ npm install
-```
-
-Ahora podemos iniciar el servidor de desarrollo:
-
-```sh
-$ npm start
-```
-
-## Documentación
-
-- Documentos de mantenimiento
-- Documentos de usuario
-
-## Cómo contribuir
-Ver `CONTRIBUTING`
-
-> https://gitlab.com/bigpear.adm/scaffolding/-/wikis/home
-
-## Noticia de licencia
-Ver `LICENCE`
+A `Tenant` is the unit of isolation; every owned row (like `Note`) points at one.
+A `Membership` is the edge between a user and a tenant carrying a `Role`
+(`OWNER`, `EDITOR`, `VIEWER`), and `data/visibility.py` is the single table that
+says what each role may do. See `docs/ARCHITECTURE.md`.

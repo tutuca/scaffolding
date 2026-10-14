@@ -1,0 +1,8 @@
+{# A search of a list: a form that is sent by GET, so a search is an address that can be kept, shared and gone back to. `form` is a Django form (its fields are drawn by `{{ form }}`, the one marked `data-filter` is the box the grid narrows the page by while typing); `action` is where the list is; `clear`, when there is a search, leads to the list without it. The links and the button work without a script, and `data-swap` makes them a swap with one. #}
+<form method="get" action="{{ action }}" role="search" data-swap>
+  {{ form }}
+  <p class="cluster">
+    <button type="submit">{{ submit }}</button>
+    {% if clear %}<a href="{{ clear }}" data-swap>{{ clear_label }}</a>{% endif %}
+  </p>
+</form>

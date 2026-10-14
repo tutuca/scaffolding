@@ -1,42 +1,11 @@
 {
-    "name": "scaffolding-ui",
-    "version": "0.0.1",
-    "type": "module",
-    "main": "index.js",
-    "scripts": {
-        "start": "vite",
-        "build": "vite build",
-        "watch": "vite build -w",
-        "test": "vitest --dom"
-    },
-    "dependencies": {
-        "@vueform/vueform": "^1.10.4",
-        "@vueuse/core": "^11.1.0",
-        "dayjs": "^1.11.13",
-        "pinia": "^2.2.4",
-        "pinia-plugin-persistedstate": "^4.1.1",
-        "vue": "^3.4.29",
-        "vue-router": "^4.3.3",
-        "vuex": "^4.1.0"
-    },
-    "devDependencies": {
-        "@pinia/testing": "^0.1.6",
-        "@tailwindcss/forms": "^0.5.9",
-        "@tailwindcss/typography": "^0.5.15",
-        "@vitejs/plugin-vue": "^5.0.5",
-        "@vue/test-utils": "^2.4.6",
-        "autoprefixer": "^10.4.20",
-        "daisyui": "^4.12.10",
-        "glob": "^11.0.0",
-        "happy-dom": "^15.0.0",
-        "postcss": "^8.4.47",
-        "sass": "^1.77.8",
-        "tailwindcss": "^3.4.13",
-        "vite": "^5.3.4",
-        "vitest": "^2.0.5"
-    },
-    "prettier": {
-        "trailingComma": "es5",
-        "tabWidth": 4
-    }
+  "name": "scaffolding",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "make test-js",
+    "lint": "node bin/js.mjs lint",
+    "format": "node bin/js.mjs format",
+    "format:check": "node bin/js.mjs format --check"
+  }
 }
