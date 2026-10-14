@@ -65,6 +65,11 @@ main {
     flex: 1;
     width: 100%;
     display: grid;
+    /* `flex: 1` makes this taller than its content; without this the grid's
+     default `align-content: stretch` grows every auto row to fill the leftover
+     height, and the h1 (and a form's own rows) balloon to hundreds of pixels.
+     Start packs the rows to the top and leaves the empty space below. */
+    align-content: start;
     /* One column, anchored at `--origin` instead of centered: a figure, a chart
      and a line of prose all begin on the same x, so the eye keeps one left edge
      down the page and across the pages. A narrow thing stops at the measure; a
