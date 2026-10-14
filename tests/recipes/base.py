@@ -1,9 +1,9 @@
-"""What every owned recipe needs: a taxpayer, and parents that share it.
+"""What every owned recipe needs: a tenant, and parents that share it.
 
 A row whose parent belongs to different books is a row the factories refuse, so
 a recipe that baked one would be testing against a state the application cannot
-reach. `owned` builds each parent from the same taxpayer as the child, which is
-also what makes a cross-taxpayer test have to say so explicitly.
+reach. `owned` builds each parent from the same tenant as the child, which is
+also what makes a cross-tenant test have to say so explicitly.
 """
 
 from functools import partial
@@ -12,7 +12,7 @@ from typing import Protocol
 from django.db.models import Model
 from model_bakery.recipe import Recipe
 
-from scaffolding.data.models import Taxpayer
+from scaffolding.data.models import Tenant
 
 
 class Maker[M: Model](Protocol):
@@ -21,8 +21,8 @@ class Maker[M: Model](Protocol):
     def __call__(self, **fields: object) -> M: ...
 
 
-def owned[M: Model](recipe: Recipe[M], taxpayer: Taxpayer, **parents: Maker[Model]) -> Maker[M]:
-    """A `make_*` that defaults the taxpayer, and builds parents in the same books.
+def owned[M: Model](recipe: Recipe[M], tenant: Tenant, **parents: Maker[Model]) -> Maker[M]:
+    """A `make_*` that defaults the tenant, and builds parents in the same books.
 
     A parent is only built when the caller did not supply one - otherwise every
     call would leave an orphan row behind.
@@ -30,10 +30,10 @@ def owned[M: Model](recipe: Recipe[M], taxpayer: Taxpayer, **parents: Maker[Mode
     make: Maker[M] = partial(recipe.make)
 
     def build(**fields: object) -> M:
-        fields.setdefault("taxpayer", taxpayer)
+        fields.setdefault("tenant", tenant)
         for name, make_parent in parents.items():
             if name not in fields:
-                fields[name] = make_parent(taxpayer=fields["taxpayer"])
+                fields[name] = make_parent(tenant=fields["tenant"])
         return make(**fields)
 
     return build

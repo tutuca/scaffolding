@@ -53,7 +53,6 @@ async function page(request) {
   if (response.ok) history.replaceState(null, "", response.url);
   // The figures are drawn by the vendored Plot, which `main.js` loads only on a
   // page that has some; a page that had none has nothing to redraw here either.
-  if (window.Plot) await (await import("./charts/mount.js")).mount();
   // A dialog the server sends open is a form that was refused: it was shown inline
   // for the browser without this script, and here it is the modal it should be.
   for (const dialog of next.querySelectorAll("dialog[open]")) {

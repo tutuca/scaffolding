@@ -1,35 +1,16 @@
 [project]
 name = "scaffolding"
-description = "Facturación de exportación de servicios (Factura E), cobros y posición monotributo."
+description = "A multi-tenant Django application scaffold."
 readme = "README.md"
 requires-python = ">=3.14"
 license = { text = "Proprietary" }
 authors = [{ name = "Matias Iturburu" }]
 dynamic = ["version"]
 dependencies = [
-  # The admin templates under `ui/templates/admin/` are merged from 6.1 and pinned
-  # by `tests/scaffolding/ui/test_vendored.py`. The pin moves with that ritual, never
-  # with a re-lock.
   "django<7",
   "djangorestframework",
   "drf-spectacular",
   "django-environ",
-  # WSAA login tickets are signed as CMS/PKCS#7. Core, not optional: without it
-  # the ARCA adapter cannot authenticate at all.
-  "cryptography",
-  "google-api-python-client",
-  "google-auth",
-  "google-auth-oauthlib",
-  # BCRA's TLS chain is not in every platform's default trust store; certifi is
-  # the portable bundle the market adapter verifies against (already in the
-  # closure through the Google client).
-  "certifi",
-  # Google is the only registration gateway. `socialaccount` is the extra that
-  # brings the provider machinery and the SocialToken the archive reads.
-  "django-allauth[socialaccount]",
-  # The bills (rent coupons, electricity and gas liquidations) are PDFs: `interface/adapter/bills`
-  # reads their text. Pure Python, no dependencies of its own.
-  "pypdf>=6.19.0",
   "django-tasks-db>=0.13.0",
 ]
 
@@ -43,10 +24,7 @@ dev = [
   "mypy",
   "django-stubs",
   "djangorestframework-stubs[compatible-mypy]",
-  # The debugger, for a live session. Dev-only: the wheel must not drag it in.
   "ipdb",
-  # `bin/ui_shot.py` drives headless Chrome over the DevTools websocket with tornado's client,
-  # and `bin/ui_diff.py` compares two runs of its shots pixel by pixel with Pillow.
   "tornado",
   "pillow",
 ]
@@ -55,10 +33,6 @@ dev = [
 scaffolding = "scaffolding.manage:main"
 
 [build-system]
-# setuptools, pyproject-only. setuptools-scm left on 2026-10-11: the version
-# comes from the VERSION file, and the one job scm did here - sweeping
-# git-tracked files into the wheel - is now the explicit package-data below,
-# so a build outside a git checkout ships the same artifact.
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
@@ -68,17 +42,14 @@ version = { file = "VERSION" }
 [tool.setuptools.packages.find]
 where = ["src"]
 
-# What a wheel ships besides the .py modules. Explicit, so the UI (templates
-# and static of `ui/`), the seeded reference tables and the typing marker ride
-# into every build regardless of git state - and nothing else can sneak in
-# with them. The packaging test (tests/scaffolding/packaging/) pins exactly this.
+# What a wheel ships besides the .py modules. Explicit, so the UI (templates and
+# static of `ui/`) and the typing marker ride into every build regardless of git
+# state. The packaging test (tests/scaffolding/packaging/) pins exactly this.
 [tool.setuptools.package-data]
 scaffolding = [
   "py.typed",
   "ui/static/**/*",
   "ui/templates/**/*",
-  "data/reference/*.json",
-  "data/starter/*.json",
 ]
 
 [tool.ruff]
@@ -86,27 +57,21 @@ line-length = 120
 
 [tool.ruff.lint]
 extend-select = [
-  "E402",     # imports must come first in the module
-  "PLC0415",  # ...and nowhere else: no imports inside functions, ever. A cycle that
-              # seems to need one is a layering bug - rework it instead.
-  "I",        # imports sorted
-  "ANN",      # annotate every argument and return
-  "E722",     # never a bare `except:`
-  "BLE",      # nor `except Exception` - name the failure you are handling
-  "DJ",       # Django's own style guide, including model member ordering
+  "E402",
+  "PLC0415",
+  "I",
+  "ANN",
+  "E722",
+  "BLE",
+  "DJ",
 ]
 ignore = [
-  "RUF012",   # Django class attrs (Meta.ordering, inlines) are idiom, not mutable-default bugs
-  "ANN401",   # *args/**kwargs pass-throughs are legitimately Any
+  "RUF012",
+  "ANN401",
 ]
 
 [tool.ruff.lint.per-file-ignores]
-# Test functions and pytest fixtures take their types from the fixtures they
-# request; annotating them adds noise without adding a reader any information.
 "tests/**" = ["ANN"]
-# Migrations are generated and frozen: Django writes the imports and the default
-# literals, and 0012's `getattr` is deliberate (the historical relation is gone
-# from the model, so the attribute would not type). They are still formatted.
 "src/scaffolding/data/migrations/*" = ["B009", "FURB157", "I001"]
 
 [tool.ruff.lint.isort]
@@ -115,23 +80,16 @@ known-first-party = ["scaffolding"]
 [tool.mypy]
 python_version = "3.14"
 plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
-disallow_untyped_defs = true      # every function: arguments and return
-disallow_incomplete_defs = true   # a partial annotation is worse than none
-disallow_any_explicit = true      # `Any` is a hole in the types: name the real one
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_any_explicit = true
 check_untyped_defs = true
 no_implicit_optional = true
 strict_equality = true
 warn_redundant_casts = true
-warn_return_any = true            # no Any return, ever
+warn_return_any = true
 warn_unused_ignores = true
 warn_unused_configs = true
-
-# Models: relaxed inference for Django's descriptor magic, but no-any-return still applies.
-# allauth ships no py.typed marker. The boundary to it is narrow - one adapter
-# subclass - and every value that crosses it is annotated on our side.
-[[tool.mypy.overrides]]
-module = ["allauth.*"]
-ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "scaffolding.data.models.*"
@@ -141,21 +99,11 @@ disable_error_code = ["var-annotated", "assignment"]
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
-# Tests name their types like src does - the "fixtures are dynamic" exemption
-# was retired 2026-09-19 at the owner's request, after 613 `Any` annotations
-# said fixtures with perfectly known types were not being named.
-# model_bakery ships no stubs, so `recipe.make()` is Any. The factories annotate
-# their real return type for the reader; this stops mypy relitigating it.
 disable_error_code = ["no-any-return"]
 
 [tool.django-stubs]
 django_settings_module = "scaffolding.conf.settings"
 
-# For the editor only. Zed, VS Code and friends run a pyright-family server,
-# which cannot execute mypy plugins - so django-stubs' synthesized ORM members
-# (`get_FOO_display`, related managers, `objects`) are invisible to it and get
-# flagged as errors that `make typecheck` does not report. mypy is the gate;
-# these rules are downgraded so the editor stays useful instead of noisy.
 [tool.pyright]
 pythonVersion = "3.14"
 pythonPlatform = "Darwin"
@@ -163,9 +111,6 @@ venvPath = "."
 venv = ".venv"
 include = ["src"]
 exclude = ["src/scaffolding/data/migrations"]
-# Typing is a readability aid here, not formal verification. Strict extras
-# (reportAny, annotate-every-class-attribute, unused-call-result) report
-# hundreds of findings on idiomatic Django and drown the useful ones.
 typeCheckingMode = "standard"
 
 reportAttributeAccessIssue = "warning"
@@ -175,9 +120,6 @@ reportOperatorIssue = "warning"
 reportIndexIssue = "warning"
 reportCallIssue = "warning"
 reportOptionalMemberAccess = "warning"
-# django-stubs parameterises ModelAdmin/ModelSerializer/ModelViewSet. Writing
-# `ModelAdmin[Invoice]` out tells a reader nothing the class body doesn't
-# already say, so this stays off rather than inviting 27 pedantic edits.
 reportMissingTypeArgument = "none"
 reportUnknownMemberType = "none"
 reportUnknownVariableType = "none"
@@ -188,34 +130,21 @@ reportIncompatibleVariableOverride = "none"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tests.settings"
-# The settings overlay is imported before collection puts the rootdir on
-# sys.path, so it is added here explicitly.
 pythonpath = ["."]
 addopts = [
   "-ra",
   "--strict-markers",
   "-m", "not integration",
   "--cov=src",
-  # `skip-covered`, so a run prints the paths nothing exercises and nothing else.
-  # The full table was 180 lines of 100% before the one line worth reading.
   "--cov-report=term-missing:skip-covered",
   "--cov-report=html:.reports/tests/coverage",
 ]
-markers = [
-  "integration: hits ARCA for real; deselected by default (run with '-m integration')",
-]
+markers = []
 python_files = ["test_*.py", "tests.py", "*_tests.py"]
 testpaths = ["tests"]
 
 [tool.coverage.run]
-# Branch, not just line: a line both paths of an `if` reach is not a tested
-# branch, and line-only coverage reads 100% while whole paths go unexercised.
 branch = true
-# Framework entrypoints have no logic and are never imported by tests. A
-# migration runs while the test database is built, before the measured test
-# phase, so its function is never covered. This is a coverage-only omission: mypy
-# still checks migrations and ruff still formats them, with three lint rules
-# relaxed in per-file-ignores.
 omit = [
   "src/scaffolding/manage.py",
   "src/scaffolding/wsgi.py",
@@ -227,22 +156,7 @@ omit = [
 exclude_lines = [
   "pragma: no cover",
   "@abstractmethod",
-  '\.\.\.\s*$',  # Protocol bodies: declarations, never executed. ruff format puts a lone `...` back on the `def` line, so match it wherever it ends a line.
-  # Imports that exist only for annotations. They are never executed, so covering
-  # them would mean importing at runtime purely to satisfy the counter - which is
-  # the cycle the TYPE_CHECKING guard exists to break.
+  '\.\.\.\s*$',
   "if TYPE_CHECKING:",
 ]
 show_missing = true
-# No `fail_under`. It was 100 until 2026-09-18, and a gate at 100 buys one thing
-# - nothing is unexercised - at the cost of the thing a suite is for. Every line
-# has to be reached, so lines that carry no rule get tests that asserts nothing
-# but reaching them (`assert account; assert str(account)`), and those sit in the
-# same files, with the same names, as the tests that pin a real invariant. The
-# number stays at 100 while the signal drops, which is the opposite of
-# observability: a reader cannot tell which tests would notice a bug.
-#
-# The report stays, and is read rather than scored: `term-missing` names the
-# paths nothing exercises, and each is a question - is this worth a test, or is
-# it code nobody needs? What guards the design instead is `test_conventions.py`,
-# which checks rules, not lines.

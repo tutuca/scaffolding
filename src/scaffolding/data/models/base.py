@@ -16,7 +16,7 @@ from scaffolding.types import (
     RATE_PLACES,
 )
 
-# Only an owned model has a taxpayer to scope by.
+# Only an owned model has a tenant to scope by.
 OwnedRow = TypeVar("OwnedRow", bound="OwnedModel")
 
 # django-stubs parameterises a field as [what you may assign, what you read back].
@@ -97,14 +97,14 @@ class OwnedQuerySet(models.QuerySet[OwnedRow]):
     """`owned_by`, uniformly. Generic over its model rather than a bare mixin: an
     unparameterised base erases the model type down the whole chain."""
 
-    def owned_by(self, taxpayer: int) -> Self:
-        """Narrowed to one taxpayer's books, named by id.
+    def owned_by(self, tenant: int) -> Self:
+        """Narrowed to one tenant's rows, named by id.
 
         An id and not a row, because this is what an entry point is handed
-        (docs/ARCHITECTURE.md, rule 7): each shell answers "which books" its own
+        (docs/ARCHITECTURE.md, rule 7): each shell answers "which tenant" its own
         way and only an id is a thing all of them can spell.
         """
-        return self.filter(taxpayer_id=taxpayer)
+        return self.filter(tenant_id=tenant)
 
 
 class NarrowedManager[T: "OwnedModel"](models.Manager[T]):
@@ -118,33 +118,33 @@ class NarrowedManager[T: "OwnedModel"](models.Manager[T]):
     def get_queryset(self) -> OwnedQuerySet[T]:
         raise NotImplementedError  # each proxy narrows its own way
 
-    def owned_by(self, taxpayer: int) -> OwnedQuerySet[T]:
-        return self.get_queryset().owned_by(taxpayer)
+    def owned_by(self, tenant: int) -> OwnedQuerySet[T]:
+        return self.get_queryset().owned_by(tenant)
 
 
 class OwnedModel(models.Model):
-    """A row that belongs to one taxpayer's books.
+    """A row that belongs to one tenant.
 
-    Every table that is not reference data carries it - no second taxonomy for
-    tables whose parent already implies one, which would cost a join in half the
-    scoping queries. The duplication cannot drift: a child's taxpayer is never
-    an argument, so there is nothing to get wrong.
+    Every owned table carries it - no second taxonomy for tables whose parent
+    already implies one, which would cost a join in half the scoping queries. The
+    duplication cannot drift: a child's tenant is never an argument, so there is
+    nothing to get wrong.
 
-    PROTECT, not CASCADE: deleting a taxpayer must not delete a ledger.
+    PROTECT, not CASCADE: deleting a tenant must not delete its rows.
     """
 
-    taxpayer = models.ForeignKey("data.Taxpayer", on_delete=models.PROTECT, related_name="+")
+    tenant = models.ForeignKey("data.Tenant", on_delete=models.PROTECT, related_name="+")
 
     class Meta:
         abstract = True
 
 
-def same_taxpayer(taxpayer: models.Model, **related: OwnedModel | None) -> None:
-    """Refuse a related row from different books.
+def same_tenant(tenant: models.Model, **related: OwnedModel | None) -> None:
+    """Refuse a related row from a different tenant.
 
     No constraint can span two tables, so the mutator is the invariant's only
     home. The keyword name is in the message, so a caller learns which argument.
     """
     for name, row in related.items():
-        if row is not None and row.taxpayer_id != taxpayer.pk:
-            raise DomainRefusal(f"`{name}` pertenece a otro contribuyente.")
+        if row is not None and row.tenant_id != tenant.pk:
+            raise DomainRefusal(f"`{name}` pertenece a otro tenant.")

@@ -34,13 +34,9 @@ CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 # The login page is shot anonymous: with a session it would be a redirect.
 SURFACES = [
     ("home", "/", True),
-    ("login", "/accounts/login/", False),
-    ("scaffolding", "/data/invoice/", True),
-    ("movimientos", "/notebooks/movimientos", True),
-    ("inversiones", "/notebooks/inversiones", True),
-    ("planes", "/notebooks/planes", True),
+    ("login", "/login/", False),
+    ("notes", "/notes/", True),
     ("colophon", "/colophon/", True),
-    ("certificado", "/certificado", True),
 ]
 # A page in a state the shot of the page alone does not show: a script run once the page has
 # settled, the seconds to wait for what it set going, and a shot of the viewport (a dialog is
@@ -51,24 +47,7 @@ MOVE = (
     "(() => { const h = document.querySelector('[data-handle]'); h.focus();"
     " for (const k of [' ', 'ArrowDown', ' ']) h.dispatchEvent(new KeyboardEvent('keydown', {key: k, bubbles: true})); })()"
 )
-STATES = [
-    ("planes-dialog-new", "/notebooks/planes", CLICK.format('button[commandfor="nueva"]'), 0.5),
-    (
-        "planes-dialog-invalid",
-        "/notebooks/planes",
-        CLICK.format('button[commandfor="nueva"]') + ";" + "document.querySelector('#nueva form').requestSubmit()",
-        0.8,
-    ),
-    ("planes-dialog-edit", "/notebooks/planes", CLICK.format('button[commandfor^="meta-"]'), 0.5),
-    ("planes-dialog-drop", "/notebooks/planes", CLICK.format('button[commandfor^="quitar-"]'), 0.5),
-    ("planes-order-moved", "/notebooks/planes", MOVE, 3.0),
-    (
-        "movimientos-alike",
-        "/notebooks/movimientos",
-        "(() => { const box = document.querySelector('.similar input'); box.scrollIntoView({block: 'center'}); box.focus(); })()",
-        0.8,
-    ),
-]
+STATES: list[tuple[str, str, str, float]] = []
 WIDTHS = [360, 1280]
 
 IDS = count(1)

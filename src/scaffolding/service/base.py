@@ -11,7 +11,7 @@ from rest_framework.serializers import BaseSerializer
 from scaffolding.data import serializers
 from scaffolding.data.models.base import OwnedModel, OwnedQuerySet
 from scaffolding.exceptions import DomainRefusal
-from scaffolding.service.tenancy import ResourcePermission, active_taxpayer
+from scaffolding.service.tenancy import ResourcePermission, active_tenant
 
 
 class ScaffoldingModelViewSet(viewsets.ModelViewSet):
@@ -49,19 +49,19 @@ class ScaffoldingModelViewSet(viewsets.ModelViewSet):
             return queryset
         # Cast rather than a narrower base: DRF types `get_queryset` against the
         # unparameterised QuerySet, and what is left here is owned.
-        return cast(OwnedQuerySet, queryset).owned_by(self.taxpayer)
+        return cast(OwnedQuerySet, queryset).owned_by(self.tenant)
 
     @property
-    def taxpayer(self) -> int:
-        """Which books this request acts on, as the id an entry point takes."""
-        return active_taxpayer(self.request).pk
+    def tenant(self) -> int:
+        """Which tenant this request acts on, as the id an entry point takes."""
+        return active_tenant(self.request).pk
 
     def perform_create(self, serializer: BaseSerializer) -> None:
-        """The taxpayer comes from the request, never from the payload: a client
-        that could name it could write into another taxpayer's books. No
-        serializer carries the field either, so there are two reasons it cannot
-        be chosen and neither depends on the other."""
-        serializer.save(taxpayer=active_taxpayer(self.request))
+        """The tenant comes from the request, never from the payload: a client
+        that could name it could write into another tenant's rows. No serializer
+        carries the field either, so there are two reasons it cannot be chosen
+        and neither depends on the other."""
+        serializer.save(tenant=active_tenant(self.request))
 
     def handle_exception(self, exc: Exception) -> Response:
         if isinstance(exc, DomainRefusal):

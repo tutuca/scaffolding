@@ -46,9 +46,9 @@ class RoleBackend(BaseBackend):
         pages Django renders before anybody has logged in: `AdminSite.login`
         builds the whole app list through `each_context`.
         """
-        if isinstance(user, AnonymousUser) or not user.is_active or user.active_taxpayer is None:
+        if isinstance(user, AnonymousUser) or not user.is_active or user.active_tenant is None:
             return None
-        return user.role_on(user.active_taxpayer)
+        return user.role_on(user.active_tenant)
 
     def has_perm(self, user_obj: BaseUser | AnonymousUser, perm: str, obj: models.Model | None = None) -> bool:
         """`data.change_invoice` -> the table, split the way Django spells it."""

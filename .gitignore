@@ -1,51 +1,28 @@
-# secrets - never commit
-.env
-.env.*
-!.env.example
-etc/secrets/
-*.crt
-*.key
-*.pem
-*.p12
-
-# data - the DB is itself sensitive; var/ holds the personal archive too
+# State and secrets - never committed.
 var/
-*.sqlite*
+etc/secrets/
+.env
 
-# personal documents - contract, scaffolding, statements. Never commit.
-*.pdf
-
-# python
+# Python
 __pycache__/
 *.py[cod]
-.venv/
 *.egg-info/
-dist/
-build/
+.mypy_cache/
 .pytest_cache/
 .ruff_cache/
-.mypy_cache/
-.reports/
+.venv/
+dist/
+build/
 .coverage
+.reports/
 
-# editor
-.idea/
-.vscode/
+# JS / node
+node_modules/
+
+# Local editor/runtime
 .DS_Store
+.zed/
+.delta/
+
+# uv's repo-local cache
 tmp/
-sandbox/requirements.txt
-
-# Claude Code scratch: worktrees are checkouts of this repo, not content.
-.claude/worktrees/
-
-# Agent worktrees under the project .agents mirror (same as .claude/worktrees).
-.agents/worktrees/
-
-# Planning and scratch material stays on the machine that wrote it: agent skills, plans,
-# specs and reviews, notebooks and database dumps are not part of the product.
-.agents/
-docs/superpowers/
-docs/reviews/
-*.ipynb
-*.db
-*.dump

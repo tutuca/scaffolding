@@ -15,7 +15,7 @@ from scaffolding.data.models.base import OwnedModel, OwnedQuerySet
 from scaffolding.types import MONEY_DIGITS, MONEY_PLACES, QUANTITY_DIGITS, RATE_DIGITS, RATE_PLACES
 
 # Never serialized, on any resource: see `plain`.
-HIDDEN = ["taxpayer"]
+HIDDEN = ["tenant"]
 
 
 class OwnedSerializer(serializers.ModelSerializer):
@@ -46,7 +46,7 @@ class OwnedSerializer(serializers.ModelSerializer):
     def books(self, queryset: OwnedQuerySet[OwnedModel]) -> OwnedQuerySet[OwnedModel]:
         request = self.context.get("request")
         looking = getattr(request, "user", None)
-        active: int | None = getattr(looking, "active_taxpayer_id", None)
+        active: int | None = getattr(looking, "active_tenant_id", None)
         return queryset.owned_by(active) if active is not None else queryset.none()
 
 

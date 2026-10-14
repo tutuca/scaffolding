@@ -58,6 +58,5 @@ export async function preview(grid, order) {
     if (!fresh) continue;
     for (const index of derived) row.cells[index].innerHTML = fresh.cells[index].innerHTML;
   }
-  if (drawn.length && window.Plot) await (await import("./charts/mount.js")).mountNodes(drawn);
   return "merged";
 }

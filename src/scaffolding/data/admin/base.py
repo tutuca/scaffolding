@@ -19,7 +19,7 @@ from django.db.models import ForeignKey, Model, QuerySet
 from django.forms import BaseInlineFormSet, ModelChoiceField, ModelForm
 from django.http import HttpRequest
 
-from scaffolding.data.models import BaseUser, Taxpayer
+from scaffolding.data.models import BaseUser, Tenant
 from scaffolding.data.models.base import OwnedModel, OwnedQuerySet
 
 
@@ -27,8 +27,8 @@ def person(request: HttpRequest) -> BaseUser | None:
     """Who is looking, or None when that is nobody.
 
     A function and not a method, because three admin classes need it and only
-    one of them is an `OwnedAdmin`: `Taxpayer` is a set of books rather than a
-    row in one, and `Membership` is the edge.
+    one of them is an `OwnedAdmin`: `Tenant` is a workspace rather than a row
+    in one, and `Membership` is the edge.
 
     None for a stranger, because `AdminSite.login` builds the whole app list
     through `each_context` - so an admin is asked about a request before anybody
@@ -53,7 +53,7 @@ def narrow_choices(db_field: ForeignKey, request: HttpRequest, kwargs: dict[str,
         return
     looking = person(request)
     related = cast(OwnedQuerySet, db_field.related_model._default_manager.get_queryset())
-    active = looking.active_taxpayer_id if looking else None
+    active = looking.active_tenant_id if looking else None
     kwargs["queryset"] = related.owned_by(active) if active is not None else related.none()
 
 
@@ -62,7 +62,7 @@ class OwnedInline(admin.TabularInline):
     would list every taxpayer, including ones the person has no membership on.
     `OwnedAdmin.save_formset` fills it from the parent instead."""
 
-    exclude = ["taxpayer"]
+    exclude = ["tenant"]
 
     def formfield_for_foreignkey(
         self, db_field: ForeignKey, request: HttpRequest, **kwargs: object
@@ -73,11 +73,11 @@ class OwnedInline(admin.TabularInline):
 
 class OwnedAdmin(admin.ModelAdmin):
     # Which books a row lands in comes from who is looking, not a dropdown.
-    exclude = ["taxpayer"]
+    exclude = ["tenant"]
 
-    def active(self, request: HttpRequest) -> Taxpayer | None:
+    def active(self, request: HttpRequest) -> Tenant | None:
         looking = person(request)
-        return looking.active_taxpayer if looking else None
+        return looking.active_tenant if looking else None
 
     def get_queryset(self, request: HttpRequest) -> QuerySet:
         """What enforces ownership. The role is the backend's question."""
@@ -108,8 +108,8 @@ class OwnedAdmin(admin.ModelAdmin):
         """
         rows = formset.save(commit=False)
         for row in rows:
-            if getattr(row, "taxpayer_id", None) is None:
-                setattr(row, "taxpayer", form.instance.taxpayer)  # noqa: B010 - row is any owned model here
+            if getattr(row, "tenant_id", None) is None:
+                setattr(row, "tenant", form.instance.tenant)  # noqa: B010 - row is any owned model here
             row.save()
         for gone in formset.deleted_objects:
             gone.delete()
@@ -117,6 +117,6 @@ class OwnedAdmin(admin.ModelAdmin):
 
     def save_model(self, request: HttpRequest, obj: Model, form: ModelForm, change: bool) -> None:
         """A new row belongs to the active books, never to what a form said."""
-        if not change and getattr(obj, "taxpayer_id", None) is None:
-            setattr(obj, "taxpayer", self.active(request))  # noqa: B010 - obj is any owned model here
+        if not change and getattr(obj, "tenant_id", None) is None:
+            setattr(obj, "tenant", self.active(request))  # noqa: B010 - obj is any owned model here
         super().save_model(request, obj, form, change)

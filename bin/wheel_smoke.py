@@ -6,8 +6,7 @@ by uv from its cache, so repeats are offline - then runs the *installed*
 `scaffolding` command four times:
 
 - `check` - Django's checks, green on a fresh install;
-- `migrate` and `loadreference` - the models and the seeded reference tables
-  ship in the wheel and read their JSON from it;
+- `migrate` - the models ship in the wheel;
 - the server boots and `/` answers - the pages' templates and statics are in
   the wheel;
 - and `runserver` refuses the insecure SECRET_KEY default - the guard holds in
@@ -139,7 +138,6 @@ def main() -> None:
     env = base_env(state, secrets)
     run([str(command), "check"], env=env, label="scaffolding check")
     run([str(command), "migrate"], env=env, label="scaffolding migrate")
-    run([str(command), "loadreference"], env=env, label="scaffolding loadreference")
 
     boot_the_server(command, env)
     refuse_the_insecure_key(command, env)

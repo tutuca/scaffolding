@@ -27,8 +27,8 @@ from django.utils.text import capfirst
 
 from .forms import Form
 
-# Every owned model has a taxpayer, and no form ever asks for it: the shell says whose books.
-OWNER = "taxpayer"
+# Every owned model has a tenant, and no form ever asks for it: the shell says whose.
+OWNER = "tenant"
 
 type Column = models.Field[object, object]
 

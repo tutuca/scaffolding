@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Check a running server: the gate, every dressed surface, a form.
+"""Check a running server: the login, the dressed surfaces, a form.
 
 A live check, so a script and not a test - it needs a server and a socket, and
 `docs/TESTING.md` keeps those out of the suite. Run it after changing anything
@@ -9,15 +9,11 @@ that serves:
     uv run python bin/serve_smoke.py
 
 Stdlib only: a smoke that runs on a bare `uv sync` proves the runtime set is
-what it claims.
-
-`--email` picks whose session to forge; the default is the only account when
-there is one. Forging is the point: the alternative is a Google round trip,
-which a smoke check cannot make.
+what it claims. `--email` picks whose session to forge; the default is the only
+account when there is one.
 """
 
 import argparse
-import http.cookies
 import os
 import sys
 import urllib.error
@@ -44,11 +40,11 @@ def report(what: str, ok: bool, detail: str = "") -> None:
 
 
 def session_for(email: str) -> str:
-    """A session for a real account, written the way `login` writes one."""
+    """A session for a real account."""
     accounts = BaseUser.objects.filter(email=email) if email else BaseUser.objects.all()[:2]
     found = list(accounts)
     if len(found) != 1:
-        sys.exit(f"Elegí una cuenta con --email; hay {len(found)}.")
+        sys.exit(f"Pick an account with --email; found {len(found)}.")
     person = found[0]
     store = import_module(settings.SESSION_ENGINE).SessionStore()
     store.create()
@@ -60,8 +56,6 @@ def session_for(email: str) -> str:
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
-    """A 302 is an answer this smoke asserts on, not a hop to follow."""
-
     def redirect_request(self, *args: object, **kwargs: object) -> None:
         return None
 
@@ -69,16 +63,16 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 OPENER = urllib.request.build_opener(NoRedirect)
 
 
-def fetch(url: str, cookie: str = "", data: bytes | None = None) -> tuple[int, bytes, dict[str, str]]:
-    request = urllib.request.Request(url, data=data, headers={"Cookie": cookie} if cookie else {})
+def fetch(url: str, cookie: str = "") -> tuple[int, bytes]:
+    request = urllib.request.Request(url, headers={"Cookie": cookie} if cookie else {})
     try:
         with OPENER.open(request, timeout=10) as answer:
-            return answer.status, answer.read(), dict(answer.headers)
+            return answer.status, answer.read()
     except urllib.error.HTTPError as answer:
-        return answer.code, answer.read(), dict(answer.headers)
+        return answer.code, answer.read()
     except OSError as unreachable:
         print(f"    {unreachable}")
-        return -1, b"", {}
+        return -1, b""
 
 
 def status(url: str, cookie: str = "") -> int:
@@ -86,27 +80,14 @@ def status(url: str, cookie: str = "") -> int:
 
 
 def carries(url: str, cookie: str, needle: bytes) -> bool:
-    """Whether a page's body contains `needle`. A status check cannot see a
-    figure that drew nothing or a stylesheet that lost its link."""
     return needle in fetch(url, cookie)[1]
 
 
-# Every surface that should wear the chrome. There is no `/notebooks/` shelf:
-# the nav links the two books directly, and the route was retired with it.
-DRESSED = (
-    "/",
-    "/notebooks/movimientos",
-    "/notebooks/inversiones",
-    "/notebooks/planes",
-    "/certificado",
-    "/data/invoice/",
-)
+# The dressed surfaces: the pages that wear the shared chrome.
+DRESSED = ("/", "/notes/")
 
 
 def dressed(base: str, cookie: str) -> bool:
-    """One nav and one footer on each surface. Counted rather than merely
-    found: nesting our footer inside the admin's own produced two once, which
-    a presence check cannot see."""
     for path in DRESSED:
         body = fetch(f"{base}{path}", cookie)[1]
         if body.count(b"<footer") != 1 or body.count(b'aria-label="Principal"') != 1:
@@ -115,38 +96,18 @@ def dressed(base: str, cookie: str) -> bool:
     return True
 
 
-def posts(url: str, cookie: str) -> bool:
-    """Whether the register form posts through: 200 is the form coming back
-    with its errors, which is Django answering."""
-    _, _, headers = fetch(url, cookie)
-    jar = http.cookies.SimpleCookie()
-    jar.load(headers.get("Set-Cookie", ""))
-    token = jar["csrftoken"].value if "csrftoken" in jar else ""
-    body = urllib.parse.urlencode({"csrfmiddlewaretoken": token, "tax_id": "", "punto_venta": ""}).encode()
-    code, _, _ = fetch(url, f"{cookie}; csrftoken={token}", data=body)
-    return code == 200
-
-
 def main(base: str, cookie: str) -> None:
     print("anonymous:")
-    report("the gateway answers", status(f"{base}/accounts/login/") == 200)
-    report("the admin sends you to a login", status(f"{base}/") == 302)
-    report("notebooks refuse a stranger", status(f"{base}/notebooks/") == 302)
+    report("the login page answers", status(f"{base}/login/") == 200)
+    report("the home page sends you to login", status(f"{base}/") == 302)
+    report("notes refuse a stranger", status(f"{base}/notes/") == 302)
     report("static files are served", status(f"{base}/static/admin/css/base.css") == 200)
 
     print("logged in:")
     report("the home page renders", status(f"{base}/", cookie) == 200)
+    report("notes render", status(f"{base}/notes/", cookie) == 200)
     report("the api answers", status(f"{base}/api/v1.0/", cookie) == 200)
-    # The figures draw client-side since the books graduated, so the server can
-    # only assert the mount point each one lands on - a browser is what proves
-    # the SVG (`bin/ui_shot.py`). A whole-body `<svg` never appears in the HTML.
-    report("movimientos mounts its figures", carries(f"{base}/notebooks/movimientos", cookie, b'data-chart="split"'))
-    report(
-        "inversiones mounts its dashboard",
-        carries(f"{base}/notebooks/inversiones", cookie, b'data-chart="strategies_bars"'),
-    )
     report("every page carries the chrome", dressed(base, cookie))
-    report("a form posts to django", posts(f"{base}/", cookie))
 
 
 if __name__ == "__main__":
@@ -155,4 +116,4 @@ if __name__ == "__main__":
     parser.add_argument("--email", default="", help="whose session to forge; the default is the only account")
     options = parser.parse_args()
     main(options.base.rstrip("/"), f"sessionid={session_for(options.email)}")
-    sys.exit(f"\n{len(FAILURES)} fallaron: {', '.join(FAILURES)}" if FAILURES else "\ntodo bien")
+    sys.exit(f"\n{len(FAILURES)} failed: {', '.join(FAILURES)}" if FAILURES else "\nall good")

@@ -1,79 +1,10 @@
 {% extends "ui/base.html" %}
 
 {% block main %}
-  <h1 id="{{ person|slugify }}">{{ person }}</h1>
-  {% if active %}
-    {% if figures.trajectory %}
-      <h2 id="el-camino">Ingreso, gasto y ahorro</h2>
-      <p class="quiet">Mes a mes desde el primer movimiento en pesos hasta el fin de la proyección,
-        en pesos constantes: lo observado va deflactado por IPC y lo proyectado ya está en pesos de
-        hoy; la franja de arriba es la inflación mensual que se descontó. Debajo, a qué se fue cada mes; en medio, cuánto quedó contra la vara de la regla;
-        abajo, el ahorro acumulado - lo que tenés más lo que rinde lo colocado - y las metas que lo gastan.</p>
-      <div class="chart" id="trajectory" data-chart="trajectory">{{ figures.trajectory|json_script }}</div>
-    {% endif %}
-
-    {% if indicators %}
-      <dl class="indicators">
-        {% for row in indicators %}
-          <div>
-            <dt>{{ row.question }}</dt>
-            <dd>{{ row.value }}</dd>
-            <dd class="quiet">{{ row.reference }}</dd>
-          </div>
-        {% endfor %}
-      </dl>
-    {% endif %}
-
-    {% if sync %}
-      <h2 id="al-dia">Al día</h2>
-      <p class="quiet">La última lectura de cada fuente. Si una fecha se quedó atrás, es
-        esa tabla la que hay que actualizar, no el número que lee.</p>
-      <dl class="sync">
-        {% for row in sync %}
-          <div>
-            <dt>{{ row.question }}</dt>
-            <dd>{{ row.value }}</dd>
-            <dd class="quiet">{{ row.reference }}</dd>
-          </div>
-        {% endfor %}
-      </dl>
-    {% endif %}
-
-    {% if gaps %}
-      <h2 id="falta-cargar">Falta cargar</h2>
-      <ul>
-        {% for gap in gaps %}
-          <li><a href="{{ gap.url }}">{{ gap.what }}</a> — sin eso no podés {{ gap.blocks }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-
-    {% if figures.flows %}
-      <h2 id="los-ultimos-meses">Los últimos meses</h2>
-      <p class="quiet">Lo que entró y lo que salió de las cuentas en pesos, mes a mes. Entradas es lo que
-        llegó de afuera: sin la tarjeta, sin lo que vuelve de un plazo fijo y sin lo que pasa
-        entre cuentas propias; salidas es el gasto, con el efectivo, los impuestos y las comisiones.
-        El proyectado que está dibujado encima no los cuenta: es lo que cuesta un mes normal de decisiones.</p>
-      <p class="quiet">La línea punteada es el ingreso <strong>deflactado por IPC</strong>, en
-        pesos del primer mes: la distancia entre la barra y la línea es lo que la inflación se
-        comió del ingreso nominal.</p>
-      <div class="chart" id="flows" data-chart="flows">{{ figures.flows|json_script }}</div>
-    {% endif %}
-
-    {% if weeks %}
-      <h2 id="semana-a-semana">Semana a semana</h2>
-      <p class="quiet">La mediana de gasto semanal, por mes. Clic en un mes para ver sus
-        semanas, y en una semana para ver sus días; el color es el bucket que más gastó. En {{ pesos }}.</p>
-      <spending-telescope class="chart narrow" source="weeks"></spending-telescope>
-      {{ weeks|json_script:"weeks" }}
-    {% endif %}
+  <h1>Scaffolding</h1>
+  {% if tenant %}
+    <p>Tenant: <strong>{{ tenant.name }}</strong>. <a href="{% url 'notes' %}">Notes</a>.</p>
   {% else %}
-    <h2 id="registra-tu-cuit">Registrá tu CUIT</h2>
-    <p>Es lo único obligatorio para empezar. Lo demás se carga después.</p>
-    <form method="post">
-      {% csrf_token %}
-      {{ form }}
-      <button type="submit">Registrar</button>
-    </form>
+    <p>No tenant yet. Create one in the <a href="{% url 'admin:index' %}">admin</a>.</p>
   {% endif %}
 {% endblock %}
