@@ -4,6 +4,7 @@ from django.urls import include, path, re_path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 from scaffolding.interface.api import urls
+from scaffolding.interface.web.forms import LoginForm
 from scaffolding.interface.web.views import ColophonView, HomeView, NotesView
 
 admin.site.site_header = "Scaffolding"
@@ -16,13 +17,13 @@ urlpatterns = [
     path("api/schema/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     # Version captured, not hardcoded; URLPathVersioning validates it against ALLOWED_VERSIONS.
     re_path(r"^api/v(?P<version>[0-9]+\.[0-9]+)/", include(urls.urlpatterns)),
-    path("login/", auth_views.LoginView.as_view(template_name="ui/login.html"), name="login"),
+    path("login/", auth_views.LoginView.as_view(template_name="ui/login.html", authentication_form=LoginForm), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("notes/", NotesView.as_view(), name="notes"),
     path("colophon/", ColophonView.as_view(), name="colophon"),
-    # The front page, shadowing the admin's index: `path("")` matches the empty
-    # path exactly, so every other admin URL falls through to the catch-all.
+    # The front page, on the empty path.
     path("", HomeView.as_view(), name="home"),
-    # Must stay last: AdminSite closes its URLconf with a catch-all.
-    path("", admin.site.urls),
+    # The admin, under /admin/. AdminSite closes its URLconf with a catch-all,
+    # so it stays last.
+    path("admin/", admin.site.urls),
 ]

@@ -4,7 +4,7 @@
     <li><a class="chrome-brand" href="/"{% if request.path == "/" %} aria-current="page"{% endif %}>Home</a></li>
     {% if user.active_tenant %}
       {% url 'notes' as u %}<li><a href="{{ u }}"{% if u in request.path %} aria-current="page"{% endif %}>Notes</a></li>
-      <li><a href="/admin/"{% if "/admin/" in request.path %} aria-current="page"{% endif %}>Admin</a></li>
+      {% url 'admin:index' as admin_url %}<li><a href="{{ admin_url }}"{% if admin_url in request.path %} aria-current="page"{% endif %}>Admin</a></li>
     {% endif %}
   </ul>
 </nav>

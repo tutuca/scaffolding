@@ -88,7 +88,7 @@ main {
        shared: a field is a subgrid of three rows, so beside a field with a long hint the next one
        has the same hint row and its widget on the same line, whatever the words. Short fields (a
        number, a date, a choice) sit two to a row as long as the box holds two of them; a long one
-       (text, a file) and everything that is not a field (the errors, the buttons) takes the
+       (text, a password, a file) and everything that is not a field (the errors, the buttons) takes the
        whole row. */
     & form {
         display: grid;
@@ -132,7 +132,7 @@ main {
             }
         }
         & > :not(div),
-        & > div:has(input:is([type="text"], [type="search"], [type="file"]), textarea) {
+        & > div:has(input:is([type="text"], [type="password"], [type="search"], [type="file"]), textarea) {
             grid-column: 1 / -1;
         }
         & > :not(div, .cluster) {

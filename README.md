@@ -44,10 +44,12 @@ works end to end.
 
 | Read | For |
 |------|-----|
+| [`docs/VALUES.md`](docs/VALUES.md) | Engineering and working values. |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Where logic lives, and why. Binding. |
 | [`docs/developer/`](docs/developer/index.md) | Developer guide: setup, usage, deployment, maintenance. |
 | [`docs/admin/`](docs/admin/index.md) | Admin guide: setup, usage, deployment, maintenance. |
 | [`docs/user/`](docs/user/index.md) | User guide: setup and usage. |
+| [`docs/PROJECT-MANAGEMENT.md`](docs/PROJECT-MANAGEMENT.md) | Scrum, issues, priorities, ceremonies, bug triage. |
 | [`docs/TESTING.md`](docs/TESTING.md) | Test conventions. |
 | [`docs/WORKFLOW.md`](docs/WORKFLOW.md) | Trunk-based workflow. |
 | [`docs/INFRASTRUCTURE.md`](docs/INFRASTRUCTURE.md) | Serving, the wheel, the sandbox. |
