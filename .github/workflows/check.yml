@@ -1,9 +1,10 @@
 # Every pull request runs the full gate as one job per check, so the PR's checks
 # list shows each check on its own - its own output, its own pass/fail - instead
-# of one `make check` blob. The eight jobs mirror `make check`'s targets. The
-# release job (`release.yml`) runs only on v* tags; this is the PR gate. The gate
-# stays network-free, so the jobs touch PyPI only while `make sync` resolves the
-# dev extra (`pytest`, `ruff`, `mypy` live in it).
+# of one `make check` blob. The eight jobs mirror `make check`'s targets; the
+# prompt-hygiene check (`skills-check`) has its own network-free workflow
+# (`skills-check.yml`). The release job (`release.yml`) runs only on v* tags;
+# this is the PR gate. The gate stays network-free, so the jobs touch PyPI only
+# while `make sync` resolves the dev extra (`pytest`, `ruff`, `mypy` live in it).
 name: Check
 
 on:

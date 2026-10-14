@@ -1,4 +1,4 @@
-.PHONY: configure sync run static migrate migrations superuser test test-js lint-js format-js lint format typecheck openapi package dist publish deploy-check release check labels sandbox sandbox-reset sandbox-shell
+.PHONY: configure sync run static migrate migrations superuser test test-js lint-js format-js lint format typecheck openapi package dist publish deploy-check release check skills-check labels sandbox sandbox-reset sandbox-shell
 
 # Declarations: every variable lives here, before any target. `?=` - a value
 # the caller exported wins.
@@ -124,7 +124,14 @@ release:
 	$(MAKE) dist
 	git tag "v$(VERSION)"
 
-check: format lint format-js lint-js typecheck migrations test-js test
+check: format lint format-js lint-js typecheck migrations test-js test skills-check
+
+# The skills under .agents/skills are prompt content committed to the repo:
+# `.agents/prompt_validate.py` checks each markdown file for control/format
+# characters, homoglyph-risk scripts, whitespace-only payloads and secrets.
+# Stdlib-only, so the check adds no dependency and stays network-free.
+skills-check:
+	@fail=0; for f in $$(find .agents/skills -type f -name '*.md' | sort); do out=$$(python3 .agents/prompt_validate.py "$$f" 2>&1) || fail=1; if [ -n "$$out" ]; then printf '%s\n' "$$f:" "$$out"; fi; done; exit $$fail
 
 # The five status labels (docs/WORKFLOW.md). Idempotent.
 labels:

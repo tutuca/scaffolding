@@ -1,0 +1,28 @@
+# Prompt hygiene for the committed agent skills: every skill markdown file is
+# prompt content, so it is checked for control/format characters, homoglyph-risk
+# scripts, whitespace-only payloads and secrets before it merges. The checker
+# (`.agents/prompt_validate.py`) is stdlib-only, so this job needs no sync and
+# stays network-free.
+name: Skills
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skills-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Validate skill markdown files
+        run: make skills-check
