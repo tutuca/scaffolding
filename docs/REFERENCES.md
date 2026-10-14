@@ -4,7 +4,7 @@ Sources found in the projects this scaffold consolidates, grouped by what they
 inform. Nothing here is invented — each entry was cited by one of the reviewed
 projects, noted in parentheses.
 
-## Architecture and stack choices
+## Architecture
 
 - **Three-tier architecture** — https://en.wikipedia.org/wiki/Multitier_architecture#Three-tier_architecture (bigpear `tecnologias.md`).
 - **The Twelve-Factor App** — https://12factor.net/ (bigpear `tecnologias.md`; the scaffold's `conf/` and `.env` policy follow it).
@@ -13,9 +13,17 @@ projects, noted in parentheses.
 - **Octopus Energy Django conventions** — https://github.com/octoenergy/public-conventions/blob/master/conventions/django.md (invoices `ARCHITECTURE.md`) — factories/mutators/queries grouping; filters on querysets, not managers; properties never hit the database.
 - **`tutuca/django_service_layer`** — https://github.com/tutuca/django_service_layer/tree/master/src/reservas (invoices `ARCHITECTURE.md`) — the `conf`/`data`/`service`/`interface` layout the scaffold inherits.
 - **Bergin & Winder, *Understanding OOP*** — http://www.csis.pace.edu/~bergin/patterns/ppoop.html (invoices `ARCHITECTURE.md`) — "data, not hierarchy": a searched table beats a class per case.
-- **Stack** — PostgreSQL https://www.postgresql.org/ · Django https://www.djangoproject.com/ · Wagtail https://docs.wagtail.org/ · Python https://www.python.org/ · Docker https://docs.docker.com/ · Webpack https://webpack.js.org/ · Sass https://sass-lang.com/ · Bulma https://bulma.io/ (bigpear `tecnologias.md`, `extrernal-docs.md`).
 - **Unix design philosophy** — http://wiki.c2.com/?UnixDesignPhilosophy · the Jargon File http://www.catb.org/~esr/jargon/ · http://harmful.cat-v.org/software/OO_programming/ (bigpear `extrernal-docs.md`).
 - **Akin's Laws of Spacecraft Design** — https://spacecraft.ssl.umd.edu/akins_laws.html (bigpear `extrernal-docs.md`).
+
+## Stack
+
+The current stack and the reasons for each choice are in [`STACK.md`](STACK.md),
+grouped by layer. The former bigpear/olmo stack — PostgreSQL, Wagtail, ElasticSearch,
+Webpack, Sass, Bulma — is recorded in `bigpear/self/docs/desarrollo/tecnologias.md`;
+its homepages, for provenance: PostgreSQL https://www.postgresql.org/ · Wagtail
+https://docs.wagtail.org/ · ElasticSearch https://www.elastic.co/ · Webpack
+https://webpack.js.org/ · Sass https://sass-lang.com/ · Bulma https://bulma.io/.
 
 ## Project / configuration management
 
