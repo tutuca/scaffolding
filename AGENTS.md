@@ -37,4 +37,5 @@ Light trunk-based (see `docs/WORKFLOW.md`): one short-lived branch per GitHub is
 squash-merged by pull request and deleted - `master` is always releasable. Five status
 labels track an issue: `todo` → `doing` → `done` (hard), plus soft `reviewing` and
 `closed`; new issues start at `todo`. Release notes generate themselves from merged PR
-titles, so a PR title is one imperative sentence. Planning lives in `docs/`.
+titles, so a PR title is one imperative sentence. Planning lives in `docs/`; the local
+running checklist stays `var/scratchpad/NEXT.md`.
