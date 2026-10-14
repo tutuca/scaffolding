@@ -9,9 +9,18 @@ from django.db import models
 
 from .base import OwnedModel, OwnedQuerySet, TimeStampedModel
 
+
+class NoteQuerySet(OwnedQuerySet):
+    # Factories
+
+    def add(self, *, tenant: int, title: str, body: str) -> "Note":
+        """Create a note in a tenant. The title must not be blank."""
+        return self.create(tenant_id=tenant, title=title.strip(), body=body.strip())
+
+
 # The owned manager, so `OwnedAdmin.get_queryset` and the API viewset's
 # `owned_by` narrow to one tenant's rows.
-NoteManager = models.Manager.from_queryset(OwnedQuerySet)
+NoteManager = models.Manager.from_queryset(NoteQuerySet)
 
 
 class Note(OwnedModel, TimeStampedModel):
