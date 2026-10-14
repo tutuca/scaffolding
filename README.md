@@ -30,6 +30,7 @@ make configure               # create var/ and etc/ trees
 cp .env.example .env         # set SECRET_KEY (and DEBUG for local work)
 scaffolding migrate
 scaffolding migrate --database tasks django_tasks_database
+scaffolding shell -c "from scaffolding.interface.tasks import prune_tasks; prune_tasks.enqueue()"   # weekly queue cleanup
 scaffolding createsuperuser
 scaffolding runserver
 ```

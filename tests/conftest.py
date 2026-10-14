@@ -1,4 +1,8 @@
+from typing import Protocol
+
 import pytest
+from django.core.management import call_command
+from django.tasks import Task, TaskResult
 from rest_framework.test import APIClient
 
 from scaffolding.data.enums import Role
@@ -63,6 +67,28 @@ def viewer_api(viewer: BaseUser) -> APIClient:
     client = APIClient()
     client.force_login(viewer)
     return client
+
+
+class RunTask(Protocol):
+    """`run_task`: enqueue a task, drain one worker pass, return the final result."""
+
+    def __call__(self, task: Task, *args: object, **kwargs: object) -> TaskResult: ...
+
+
+@pytest.fixture
+def run_task() -> RunTask:
+    """Enqueue a task, drain one worker pass, and return its final result.
+
+    The database backend queues instead of running; this fixture is the test's
+    worker. One `db_worker --batch` pass drains whatever was enqueued.
+    """
+
+    def _run(task: Task, *args: object, **kwargs: object) -> TaskResult:
+        result = task.enqueue(*args, **kwargs)
+        call_command("db_worker", batch=True, verbosity=0)
+        return task.get_result(result.id)
+
+    return _run
 
 
 @pytest.fixture

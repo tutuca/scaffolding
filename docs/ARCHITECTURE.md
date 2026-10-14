@@ -28,9 +28,10 @@ ui/          templates + static (no models, no views)
    layer's behalf; a mutator names the invariant it protects.
 3. **Use cases are plain functions** with keyword-only arguments, over the data
    layer. No shell reimplements a rule.
-4. **The two registries.** `service/views.py` says what HTTP serves;
-   `service/commands.py` says what argv serves. Both point at the same use cases.
-   `test_conventions.py` checks they agree.
+4. **The three registries.** `service/views.py` says what HTTP serves,
+   `service/commands.py` what argv serves, and `interface/tasks/__init__.py`
+   what the queue serves (`TASK_MODULES`). Each points at the same use cases;
+   `test_conventions.py` checks each registry agrees with its modules.
 5. **The tenant comes from the request/argv, never the payload.** Owned rows are
    scoped by the active tenant (`data/models/base.py: OwnedModel`); a client that
    could name the tenant could write into another's.
