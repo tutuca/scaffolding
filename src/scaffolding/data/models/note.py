@@ -10,10 +10,10 @@ from django.db import models
 from .base import OwnedModel, OwnedQuerySet, TimeStampedModel
 
 
-class NoteQuerySet(OwnedQuerySet):
+class NoteQuerySet(OwnedQuerySet["Note"]):
     # Factories
 
-    def add(self, *, tenant: int, title: str, body: str) -> "Note":
+    def add(self, *, tenant: int, title: str, body: str) -> Note:
         """Create a note in a tenant. The title must not be blank."""
         return self.create(tenant_id=tenant, title=title.strip(), body=body.strip())
 

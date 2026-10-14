@@ -22,7 +22,7 @@ from .tenant import Tenant
 class UserQuerySet(models.QuerySet["BaseUser"]):
     # Factories
 
-    def create_user(self, email: str, password: str | None = None, **extra: object) -> "BaseUser":
+    def create_user(self, email: str, password: str | None = None, **extra: object) -> BaseUser:
         """The one way a user is made."""
         if not email:
             raise ValueError("A user needs an email: it is the identifier.")
@@ -34,7 +34,7 @@ class UserQuerySet(models.QuerySet["BaseUser"]):
         user.save(using=self.db)
         return user
 
-    def create_superuser(self, email: str, password: str | None = None, **extra: object) -> "BaseUser":
+    def create_superuser(self, email: str, password: str | None = None, **extra: object) -> BaseUser:
         """The one way in that skips the gateway."""
         extra.setdefault("is_staff", True)
         extra.setdefault("is_superuser", True)
@@ -42,7 +42,7 @@ class UserQuerySet(models.QuerySet["BaseUser"]):
 
 
 # django-stubs needs the Manager declared outside the model body.
-UserManager = models.Manager.from_queryset(UserQuerySet)
+UserManager = BaseUserManager.from_queryset(UserQuerySet)
 
 
 class BaseUser(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
@@ -59,9 +59,7 @@ class BaseUser(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     is_staff = models.BooleanField(default=False)
 
     # SET_NULL: losing access to a tenant must not delete the person.
-    active_tenant = models.ForeignKey(
-        "data.Tenant", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
-    )
+    active_tenant = models.ForeignKey("data.Tenant", null=True, blank=True, on_delete=models.SET_NULL, related_name="+")
 
     USERNAME_FIELD = "email"
     # ClassVar to match django-stubs' declaration on AbstractBaseUser.

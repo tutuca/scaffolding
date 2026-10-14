@@ -16,7 +16,7 @@ from .base import TimeStampedModel
 class MembershipQuerySet(models.QuerySet["Membership"]):
     # Queries
 
-    def owners(self) -> "MembershipQuerySet":
+    def owners(self) -> MembershipQuerySet:
         return self.filter(role=Role.OWNER)
 
     # Factories
@@ -28,7 +28,7 @@ class MembershipQuerySet(models.QuerySet["Membership"]):
         tenant: models.Model,
         role: str,
         invited_by: models.Model | None = None,
-    ) -> "Membership":
+    ) -> Membership:
         """Grant or re-grant. Re-granting changes the role; it never duplicates."""
         if role not in Role.values:
             raise DomainRefusal(f"{role!r} no es un rol: {', '.join(Role.values)}.")

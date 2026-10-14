@@ -91,7 +91,9 @@ def test_every_owned_model_is_visible() -> None:
     owned = [m for m in apps.get_app_config("data").get_models() if issubclass(m, OwnedModel)]
     granted = {resource for row in VISIBILITY.values() for resource in row}
     for model in owned:
-        assert root_of(model._meta.model_name) in granted, f"{model.__name__} is in no role's visibility row."
+        model_name = model._meta.model_name
+        assert model_name is not None
+        assert root_of(model_name) in granted, f"{model.__name__} is in no role's visibility row."
 
 
 def test_every_model_is_registered() -> None:

@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class TenantQuerySet(models.QuerySet["Tenant"]):
     # Factories
 
-    def register(self, *, name: str, slug: str | None = None) -> "Tenant":
+    def register(self, *, name: str, slug: str | None = None) -> Tenant:
         """Register a tenant. Refuses a slug already here."""
         key = slug or slugify(name)
         if not key:

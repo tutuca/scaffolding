@@ -27,7 +27,10 @@ SECRETS_DIR = Path(env("SCAFFOLDING_SECRETS_DIR", default=str(PROJECT_ROOT / "et
 INSECURE_SECRET_KEY = "insecure-dev-key-set-me-in-.env"
 SECRET_KEY = env("SECRET_KEY", default=INSECURE_SECRET_KEY)
 DEBUG = env.bool("DEBUG", default=False)
-ALLOWED_HOSTS = ["localhost"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+]
 
 INSTALLED_APPS = [
     # First, and only for template resolution: `APP_DIRS` searches in this order

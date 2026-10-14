@@ -38,9 +38,9 @@ class OwnedSerializer(serializers.ModelSerializer):
             relation = getattr(field, "child_relation", field)
             if not isinstance(relation, RelatedField):
                 continue
-            queryset = relation.queryset
+            queryset = relation.queryset  # type: ignore[arg-type]
             if queryset is not None and issubclass(queryset.model, OwnedModel):
-                relation.queryset = self.books(cast(OwnedQuerySet[OwnedModel], queryset))
+                relation.queryset = self.books(cast(OwnedQuerySet[OwnedModel], queryset))  # type: ignore[arg-type]
         return fields
 
     def books(self, queryset: OwnedQuerySet[OwnedModel]) -> OwnedQuerySet[OwnedModel]:

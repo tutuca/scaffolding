@@ -15,9 +15,9 @@ class Command(ScaffoldingCommand):
         parser.add_argument("--body", default="", help="Note body (for add)")
 
     def handle(self, *args: object, **options: object) -> None:
-        tenant = self.tenant(options["tenant"])
+        tenant = self.tenant(str(options["tenant"]))
         if options["action"] == "add":
-            use_cases.create_note(tenant=tenant, title=options["title"], body=options["body"])
+            use_cases.create_note(tenant=tenant, title=str(options["title"]), body=str(options["body"]))
             self.stdout.write("noted.")
         else:
             for note in use_cases.list_notes(tenant=tenant):
